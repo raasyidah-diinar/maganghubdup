@@ -1,8 +1,6 @@
-"use client";
-
 import { MapPin, Briefcase, Users, CheckCircle2, Bookmark, Loader2 } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type PlaceCardProps = {
@@ -17,6 +15,7 @@ type PlaceCardProps = {
   totalAlumni: number;
   isVerified?: boolean;
   isLoading?: boolean;
+  isInDashboard?: boolean;
 };
 
 export default function PlaceCard({
@@ -31,13 +30,18 @@ export default function PlaceCard({
   totalAlumni,
   isVerified = false,
   isLoading = false,
+  isInDashboard = false,
 }: PlaceCardProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isDashboardView = searchParams.get('view') === 'dashboard' || isInDashboard;
 
   if (isLoading) return null;
 
   const handleCompanyClick = () => {
-    router.push(`/tempat-magang/${id}`);
+    const detailPath = `/id/magang/${id}`;
+    const route = isDashboardView ? `${detailPath}?view=dashboard` : detailPath;
+    router.push(route);
   };
 
   return (

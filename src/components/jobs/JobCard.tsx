@@ -2,6 +2,7 @@ import { Bookmark, MapPin, Users, Briefcase, Check, Building2 } from "lucide-rea
 import Image from "next/image";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSearchParams } from "next/navigation";
 
 type JobCardProps = {
   id: number;
@@ -38,6 +39,9 @@ export default function JobCard({
   isInDashboard = false,
   isLoading = false,
 }: JobCardProps) {
+  const searchParams = useSearchParams();
+  const isDashboardView = searchParams.get('view') === 'dashboard' || isInDashboard;
+
   if (isLoading) {
     return (
       <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-md p-4 flex flex-col h-[260px] overflow-hidden">
@@ -65,7 +69,9 @@ export default function JobCard({
       </div>
     );
   }
-  const detailLink = isInDashboard ? `/id/dashboard/jobs/${id}` : `/id/jobs/${id}`;
+
+  const detailPath = `/id/jobs/${id}`;
+  const detailLink = isDashboardView ? `${detailPath}?view=dashboard` : detailPath;
 
   return (
     <Link href={detailLink} className="block">

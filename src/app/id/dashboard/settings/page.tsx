@@ -16,13 +16,15 @@ import {
     Smartphone,
     Eye,
     EyeOff,
-    AlertCircle
+    AlertCircle,
+    Loader2
 } from "lucide-react";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 
 export default function SettingsPage() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("profile");
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -38,7 +40,15 @@ export default function SettingsPage() {
 
         handleResize();
         window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 600);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            clearTimeout(timer);
+        };
     }, []);
 
     const [formData, setFormData] = useState({
@@ -85,6 +95,21 @@ export default function SettingsPage() {
         { id: "account", label: "Akun & Keamanan", desc: "Email, Password", icon: <Lock size={20} /> },
         { id: "notifications", label: "Notifikasi", desc: "Email & Push", icon: <Bell size={20} /> },
     ];
+
+    if (isLoading) {
+        return (
+            <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+                <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+                <div className="flex-1 flex flex-col overflow-hidden">
+                    <DashboardHeader onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+                    <div className="flex-1 flex flex-col items-center justify-center">
+                        <Loader2 className="w-12 h-12 text-[#E8532F] animate-spin mb-4" />
+                        <p className="text-gray-500 font-medium tracking-wide">Menyiapkan Pengaturan...</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex h-screen bg-[#F8FAFC] dark:bg-gray-900">

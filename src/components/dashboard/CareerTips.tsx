@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Lightbulb } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 
 interface CareerTip {
     id: number;
@@ -23,7 +23,7 @@ export default function CareerTips({ tips }: CareerTipsProps) {
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
             {/* Header */}
             <div className="flex items-center gap-2 mb-4">
-                <Lightbulb size={20} className="text-orange-500" />
+                <GraduationCap size={20} className="text-orange-500" />
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">
                     Tips Karir
                 </h3>
@@ -45,12 +45,14 @@ export default function CareerTips({ tips }: CareerTipsProps) {
             </ol>
 
             {/* Read More Link */}
-            <Link
-                href="/id/blogs"
-                className="text-sm font-medium text-orange-600 dark:text-orange-400 hover:underline"
-            >
-                Selengkapnya
-            </Link>
+            <div className="flex justify-center">
+                <Link
+                    href="/id/blogs"
+                    className="text-sm font-medium text-orange-600 dark:text-orange-400 hover:underline"
+                >
+                    Selengkapnya
+                </Link>
+            </div>
         </div>
     );
 }

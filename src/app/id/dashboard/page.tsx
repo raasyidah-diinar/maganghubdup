@@ -8,54 +8,54 @@ import ApplicationStatusList from "@/components/dashboard/ApplicationStatusList"
 import AgendaCard from "@/components/dashboard/AgendaCard";
 import CareerTips from "@/components/dashboard/CareerTips";
 import SearchMagangButton from "@/components/ui/SearchMagangButton";
-import { FileText, Eye, Calendar, Briefcase } from "lucide-react";
+import { FileText, Eye, Calendar, Briefcase, Bell, Settings, Users, Zap } from "lucide-react";
 import { useState, useEffect } from "react";
 
 // Dummy data
 const statistics = [
     {
         id: "1",
-        icon: <FileText size={24} />,
+        icon: <FileText size={20} />,
         value: 14,
         label: "Pengajuan",
         status: {
-            text: "2 menunggu lagi",
+            text: "+ 2 menunggu lagi",
             type: "warning" as const,
         },
-        iconBgColor: "bg-orange-100 dark:bg-orange-900/30",
+        iconBgColor: "p-2.5 rounded-xl bg-gradient-to-br from-[#F04E30] to-[#F9A01B] text-white shadow-sm",
     },
     {
         id: "2",
-        icon: <Eye size={24} />,
+        icon: <Users size={20} />,
         value: 128,
         label: "Profil Dilihat",
         status: {
-            text: "Dari 5 Perusahaan",
+            text: "Oleh 5 Perusahaan",
             type: "info" as const,
         },
-        iconBgColor: "bg-yellow-100 dark:bg-yellow-900/30",
+        iconBgColor: "p-2.5 rounded-xl bg-gradient-to-br from-[#F9A01B] to-[#FFD200] text-white shadow-sm",
     },
     {
         id: "3",
-        icon: <Calendar size={24} />,
+        icon: <Calendar size={20} />,
         value: 2,
         label: "Undangan Interview",
         status: {
             text: "1 Menunggu respon",
             type: "warning" as const,
         },
-        iconBgColor: "bg-orange-100 dark:bg-orange-900/30",
+        iconBgColor: "p-2.5 rounded-xl bg-gradient-to-br from-[#F04E30] to-[#F9A01B] text-white shadow-sm",
     },
     {
         id: "4",
-        icon: <Briefcase size={24} />,
+        icon: <Briefcase size={20} />,
         value: 45,
         label: "Peluang Magang",
         status: {
             text: "Sesuai minatmu",
             type: "success" as const,
         },
-        iconBgColor: "bg-yellow-100 dark:bg-yellow-900/30",
+        iconBgColor: "p-2.5 rounded-xl bg-gradient-to-br from-[#F9A01B] to-[#FFD200] text-white shadow-sm",
     },
 ];
 
@@ -129,7 +129,17 @@ export default function DashboardPage() {
                                     Kelola pengajuan magang dan pantau progres karirmu
                                 </p>
                             </div>
-                            <SearchMagangButton />
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-2">
+                                    <button className="w-10 h-10 flex items-center justify-center bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+                                        <Bell size={20} className="text-gray-600 dark:text-gray-400" />
+                                    </button>
+                                    <button className="w-10 h-10 flex items-center justify-center bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+                                        <Settings size={20} className="text-gray-600 dark:text-gray-400" />
+                                    </button>
+                                </div>
+                                <SearchMagangButton />
+                            </div>
                         </div>
 
                         {/* Profile Completion Banner */}
@@ -168,7 +178,7 @@ export default function DashboardPage() {
                                     type="INTERVIEW USER"
                                     title="UI/UX Designer"
                                     company="Gojek"
-                                    dateTime="Rabu, 10:00 WIB"
+                                    dateTime="Besok, 10:00 WIB"
                                 />
                                 <CareerTips />
                             </div>

@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import ProjectCard from "@/components/dashboard/projects/ProjectCard";
+import { Loader2 } from "lucide-react";
 
 export default function ProjectListPage() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
 
     // Close sidebar on mobile by default
     useEffect(() => {
@@ -21,6 +23,12 @@ export default function ProjectListPage() {
         handleResize();
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Simulated loading delay
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoading(false), 2000);
+        return () => clearTimeout(timer);
     }, []);
 
     const projects = [
@@ -47,12 +55,18 @@ export default function ProjectListPage() {
                         <h1 className="text-xl font-bold text-gray-500 dark:text-gray-400 mb-6 uppercase tracking-wider">PROJECT SAYA</h1>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                            {projects.map((project) => (
-                                <ProjectCard
-                                    key={project.id}
-                                    {...project}
-                                />
-                            ))}
+                            {isLoading ? (
+                                <div className="col-span-full flex flex-col items-center justify-center py-20">
+                                    <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
+                                </div>
+                            ) : (
+                                projects.map((project) => (
+                                    <ProjectCard
+                                        key={project.id}
+                                        {...project}
+                                    />
+                                ))
+                            )}
                         </div>
                     </div>
                 </main>

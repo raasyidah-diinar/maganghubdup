@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
     ArrowLeft,
     Download,
@@ -30,6 +30,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { JOBS_DUMMY, Job } from "@/lib/constants/jobs";
+import { PLACES_DUMMY } from "@/lib/constants/places";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
@@ -67,6 +68,7 @@ const JobDetailSkeleton = () => (
 export default function Page() {
     const params = useParams();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [isDownloading, setIsDownloading] = useState(false);
     const [isQRModalOpen, setIsQRModalOpen] = useState(false);
     const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
@@ -75,7 +77,9 @@ export default function Page() {
     const [randomJobs, setRandomJobs] = useState<Job[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Safety check for ID
+    const view = searchParams.get("view");
+    const isDashboardView = view === "dashboard";
+
     const jobId = typeof params?.id === 'string' ? parseInt(params.id) : 1;
     const currentJob = JOBS_DUMMY.find(j => j.id === jobId) || JOBS_DUMMY[0];
 
@@ -93,13 +97,13 @@ export default function Page() {
     }, [currentJob.id]);
 
     const job = currentJob;
+    const company = PLACES_DUMMY.find(p => p.companyName === job.company);
 
     const handleDownloadPDF = async () => {
         const element = flyerRef.current;
         if (!element) return;
 
         // 1. MANUALLY SHOW FLYER FOR CAPTURE
-        // We use direct style manipulation to avoid re-render cycles during the capture process
         element.style.display = 'block';
         element.style.position = 'fixed';
         element.style.top = '0';
@@ -109,7 +113,6 @@ export default function Page() {
 
         setIsDownloading(true);
         try {
-            // Wait for images inside the flyer to be fully loaded
             const flyerImages = Array.from(element.getElementsByTagName('img'));
             await Promise.all(flyerImages.map(img => {
                 if (img.complete) return Promise.resolve();
@@ -119,7 +122,6 @@ export default function Page() {
                 });
             }));
 
-            // Extra wait for layout and font stabilization
             await new Promise(resolve => setTimeout(resolve, 500));
 
             const dataUrl = await toPng(element, {
@@ -132,7 +134,6 @@ export default function Page() {
             });
 
             if (!dataUrl || dataUrl === 'data:,' || dataUrl.length < 1000) {
-                console.error("Captured PNG is too small or empty:", dataUrl?.substring(0, 100));
                 throw new Error("Flyer capture produced blank/empty image");
             }
 
@@ -143,18 +144,9 @@ export default function Page() {
             pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
             pdf.save(`Flyer-${job.title}-${job.company}.pdf`);
         } catch (error) {
-            console.error("CRITICAL PDF ERROR DETECTED");
-            const errorObj = error as any;
-            const detailedError = {
-                message: errorObj?.message || "No message",
-                name: errorObj?.name || "No name",
-                stack: errorObj?.stack || "No stack",
-                full: JSON.stringify(error, Object.getOwnPropertyNames(error))
-            };
-            console.error("DETAILED ERROR:", detailedError);
-            alert(`Gagal membuat PDF: ${detailedError.message}`);
+            console.error("CRITICAL PDF ERROR DETECTED", error);
+            alert("Gagal membuat PDF");
         } finally {
-            // 2. HIDE FLYER AGAIN
             element.style.display = 'none';
             setIsDownloading(false);
         }
@@ -164,8 +156,8 @@ export default function Page() {
         return <JobDetailSkeleton />;
     }
 
-    return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-gray-900 flex flex-col relative overflow-x-hidden">
+    const pageContent = (
+        <>
             <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar relative">
                 {/* Normal Portal View */}
                 <div className="no-print">
@@ -338,6 +330,35 @@ export default function Page() {
                                         ))}
                                     </div>
                                 </section>
+
+                                <div className="pt-2 border-t border-gray-100 dark:border-gray-700/50" />
+
+                                <section>
+                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-3">
+                                        <Building2 size={24} className="text-gray-400" />
+                                        Tentang Perusahaan
+                                    </h3>
+                                    <Link href={`/id/magang/${company?.id || 1}${isDashboardView ? '?view=dashboard' : ''}`}>
+                                        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md hover:border-orange-500/20 transition-all flex items-center gap-5 group">
+                                            <div className="w-20 h-20 bg-white dark:bg-gray-700 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-600 flex items-center justify-center p-3 flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
+                                                {company?.companyLogo || job.companyLogo ? (
+                                                    <Image src={company?.companyLogo || job.companyLogo || ""} alt={company?.companyName || job.company} width={80} height={80} className="object-contain" />
+                                                ) : (
+                                                    <Building2 className="text-gray-300" size={40} />
+                                                )}
+                                            </div>
+                                            <div className="flex-1">
+                                                <h4 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-orange-600 transition-colors">
+                                                    {company?.companyName || job.company}
+                                                </h4>
+                                                <p className="text-gray-500 dark:text-gray-400 font-medium">
+                                                    {company?.category || job.businessField}
+                                                </p>
+                                            </div>
+                                            <ArrowRight size={20} className="text-gray-300 group-hover:text-orange-500 group-hover:translate-x-1 transition-all" />
+                                        </div>
+                                    </Link>
+                                </section>
                             </div>
                         </div>
 
@@ -346,7 +367,7 @@ export default function Page() {
                             <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Lowongan Serupa</h2>
                             <div className="space-y-3">
                                 {randomJobs.map((sj: Job) => (
-                                    <Link key={sj.id} href={`/id/jobs/${sj.id}`} className="group block h-full">
+                                    <Link key={sj.id} href={`/id/jobs/${sj.id}${isDashboardView ? '?view=dashboard' : ''}`} className="group block h-full">
                                         <div className="bg-white dark:bg-gray-800 rounded-[28px] p-6 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all flex flex-col gap-2 relative overflow-hidden">
                                             {/* Left Accent Border */}
                                             <div className="absolute top-0 left-0 bottom-0 w-[5px] bg-orange-500" />
@@ -565,7 +586,6 @@ export default function Page() {
                 </div>
             </main>
 
-
             <style jsx global>{`
                 @media print {
                     @page {
@@ -736,6 +756,12 @@ export default function Page() {
                     </div>
                 </div>
             )}
+        </>
+    );
+
+    return (
+        <div className={isDashboardView ? "" : "min-h-screen bg-[#F8FAFC] dark:bg-gray-900"}>
+            {pageContent}
         </div>
     );
 }

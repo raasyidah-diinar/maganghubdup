@@ -1,54 +1,56 @@
 "use client";
 
-import { Archive, Type, Image as ImageIcon, Settings } from "lucide-react";
+import { Archive, Type, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface ProjectOptionsProps {
     isOpen: boolean;
     onClose: () => void;
     onOpenArchive: () => void;
+    onOpenAbout: () => void;
 }
 
-export default function ProjectOptions({ isOpen, onClose, onOpenArchive }: ProjectOptionsProps) {
+export default function ProjectOptions({ isOpen, onClose, onOpenArchive, onOpenAbout }: ProjectOptionsProps) {
+    const router = useRouter();
+
     if (!isOpen) return null;
 
     return (
         <>
             <div className="fixed inset-0 z-20" onClick={onClose}></div>
-            <div className="absolute top-12 right-0 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden z-30 animate-in fade-in zoom-in-95 duration-200">
-                <div className="p-3 border-b border-gray-100 dark:border-gray-700">
-                    <h3 className="text-sm font-bold text-gray-900 dark:text-white">Opsi Project</h3>
-                </div>
-
-                <div className="p-1">
+            <div className="absolute top-12 right-0 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-gray-100 dark:border-gray-700 overflow-hidden z-30 animate-in fade-in zoom-in-95 duration-200">
+                <div className="p-2 flex flex-col gap-1">
                     <button
                         onClick={() => {
                             onOpenArchive();
                             onClose();
                         }}
-                        className="w-full flex items-center justify-between px-3 py-2.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg group transition-colors"
+                        className="w-full flex items-center justify-between px-3 py-2 text-sm text-[#475569] dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors font-medium"
                     >
                         <div className="flex items-center gap-3">
-                            <Archive size={16} className="text-gray-400 group-hover:text-orange-500" />
+                            <Archive size={18} className="text-[#64748b]" strokeWidth={2} />
                             <span>Lihat Arsip</span>
                         </div>
-                        <span className="bg-orange-100 text-orange-600 text-xs font-bold px-2 py-0.5 rounded-full">3</span>
+                        <span className="bg-orange-100 dark:bg-orange-900/30 text-orange-600 text-[11px] font-extrabold w-[22px] h-[22px] flex items-center justify-center rounded-full leading-none">2</span>
                     </button>
 
-                    <button className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg group transition-colors">
-                        <Type size={16} className="text-gray-400 group-hover:text-orange-500" />
-                        <span>Ganti Judul Project</span>
+                    <button
+                        onClick={() => {
+                            onOpenAbout();
+                            onClose();
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[#475569] dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors font-medium"
+                    >
+                        <Type size={18} className="text-[#64748b]" strokeWidth={2} />
+                        <span>Tentang Proyek</span>
                     </button>
 
-                    <button className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg group transition-colors">
-                        <ImageIcon size={16} className="text-gray-400 group-hover:text-orange-500" />
-                        <span>Ganti Background</span>
-                    </button>
-
-                    <div className="my-1 border-t border-gray-100 dark:border-gray-700"></div>
-
-                    <button className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors">
-                        <Settings size={16} />
-                        <span>Pengaturan Board</span>
+                    <button
+                        onClick={() => router.push("/id/dashboard/projects")}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-sm text-[#475569] dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors font-medium"
+                    >
+                        <LogOut size={18} className="text-[#64748b]" strokeWidth={2} />
+                        <span>Keluar Proyek</span>
                     </button>
                 </div>
             </div>

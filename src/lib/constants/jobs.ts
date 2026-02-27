@@ -105,7 +105,20 @@ export const JOBS_DUMMY: Job[] = [
         isPremium: true,
         workType: "Hybrid",
         businessField: "Technology",
-        status: "Aktif"
+        status: "Aktif",
+        description: "Gojek sedang mencari Backend Developer Intern yang antusias untuk bekerja dengan arsitektur microservices skala besar.",
+        responsibilities: [
+            "Membangun dan memelihara microservices menggunakan Go",
+            "Mengoptimalkan query database dan performa API",
+            "Menulis unit test dan dokumentasi teknis"
+        ],
+        skills: ["GO", "DOCKER", "KUBERNETES", "POSTGRESQL", "GRPC"],
+        benefits: [
+            "Lingkungan Engineering Kelas Dunia",
+            "Voucher Gojek Bulanan",
+            "Asuransi Kesehatan"
+        ],
+        companyDescription: "Gojek adalah platform on-demand terkemuka di Asia Tenggara yang melayani jutaan pengguna setiap harinya."
     },
     {
         id: 4,
@@ -124,7 +137,20 @@ export const JOBS_DUMMY: Job[] = [
         isPremium: false,
         workType: "Onsite",
         businessField: "Education Tech",
-        status: "Aktif"
+        status: "Aktif",
+        description: "Bantu kami merevolusi pendidikan di Indonesia dengan mengembangkan aplikasi mobile yang interaktif dan mudah digunakan.",
+        responsibilities: [
+            "Implementasi desain UI ke dalam kode Flutter",
+            "Integrasi RESTful API ke dalam aplikasi mobile",
+            "Melakukan testing dan debugging pada berbagai perangkat Android/iOS"
+        ],
+        skills: ["FLUTTER", "DART", "FIREBASE", "GIT"],
+        benefits: [
+            "Akses Gratis Ruangguru",
+            "Budaya Startup yang Dinamis",
+            "Ruang Kerja yang Nyaman"
+        ],
+        companyDescription: "Ruangguru adalah perusahaan teknologi pendidikan terbesar di Indonesia."
     },
     {
         id: 5,
@@ -143,7 +169,20 @@ export const JOBS_DUMMY: Job[] = [
         isPremium: true,
         workType: "Remote",
         businessField: "Business",
-        status: "Aktif"
+        status: "Aktif",
+        description: "Pelajari cara mengelola infrastruktur cloud skala besar dan otomatisasi pipeline CI/CD di Bukalapak.",
+        responsibilities: [
+            "Membantu pengelolaan pipeline CI/CD",
+            "Otomatisasi deployment menggunakan Docker dan Jenkins",
+            "Monitoring stabilitas sistem dan performa cloud"
+        ],
+        skills: ["DOCKER", "JENKINS", "AWS", "LINUX", "TERRAFORM"],
+        benefits: [
+            "Kerja Full Remote",
+            "Subsidi Internet Bulanan",
+            "Jadwal Kerja Fleksibel"
+        ],
+        companyDescription: "Bukalapak adalah salah satu marketplace terbesar di Indonesia yang memberdayakan UMKM."
     },
     {
         id: 6,
@@ -162,7 +201,20 @@ export const JOBS_DUMMY: Job[] = [
         isPremium: true,
         workType: "Hybrid",
         businessField: "Technology",
-        status: "Aktif"
+        status: "Aktif",
+        description: "Dapatkan pengalaman langsung bekerja dengan teknologi cloud AWS terbaru dan bantu pelanggan melakukan migrasi ke cloud.",
+        responsibilities: [
+            "Membantu konfigurasi layanan AWS (EC2, S3, RDS)",
+            "Menulis skrip Infrastructure as Code menggunakan Terraform",
+            "Menganalisis arsitektur sistem pelanggan"
+        ],
+        skills: ["AWS", "AZURE", "TERRAFORM", "PYTHON", "NETWORKING"],
+        benefits: [
+            "Pelatihan Sertifikasi AWS Gratis",
+            "Laptop Perusahaan",
+            "Gaji yang Sangat Kompetitif"
+        ],
+        companyDescription: "Amazon Web Services (AWS) adalah platform cloud yang paling komprehensif dan banyak digunakan di dunia."
     },
     {
         id: 7,
@@ -181,7 +233,20 @@ export const JOBS_DUMMY: Job[] = [
         isPremium: false,
         workType: "Onsite",
         businessField: "Technology",
-        status: "Aktif"
+        status: "Aktif",
+        description: "Membantu operasional IT harian dan menangani masalah teknis di salah satu perusahaan telekomunikasi terbesar.",
+        responsibilities: [
+            "Melakukan troubleshooting masalah hardware dan software",
+            "Membantu instalasi dan konfigurasi sistem operasi",
+            "Maintenance infrastruktur jaringan lokal"
+        ],
+        skills: ["TROUBLESHOOTING", "HARDWARE", "WINDOWS SERVER", "NETWORKING"],
+        benefits: [
+            "Paket Data Unlimited",
+            "Asuransi Kecelakaan Kerja",
+            "Sertifikat Resmi Indosat"
+        ],
+        companyDescription: "Indosat Ooredoo Hutchison adalah perusahaan telekomunikasi digital terkemuka di Indonesia."
     },
     {
         id: 8,
@@ -200,7 +265,20 @@ export const JOBS_DUMMY: Job[] = [
         isPremium: true,
         workType: "Onsite",
         businessField: "Technology",
-        status: "Aktif"
+        status: "Aktif",
+        description: "Pelajari cara mengamankan infrastruktur digital nasional dan lakukan simulasi serangan cyber.",
+        responsibilities: [
+            "Membantu pengujian penetrasi pada aplikasi web",
+            "Monitoring log keamanan menggunakan SIEM",
+            "Melakukan analisis kerentanan sistem"
+        ],
+        skills: ["BTOP", "METASPLOIT", "WIRESHARK", "LINUX SEC"],
+        benefits: [
+            "Sesi Mentoring dengan Ahli Keamanan",
+            "Akses ke Lab Cyber Security",
+            "Tunjangan Transportasi"
+        ],
+        companyDescription: "Telkom Indonesia adalah perusahaan informasi dan komunikasi serta penyedia jasa dan jaringan telekomunikasi terbesar di Indonesia."
     },
     {
         id: 9,
@@ -219,7 +297,20 @@ export const JOBS_DUMMY: Job[] = [
         isPremium: true,
         workType: "Hybrid",
         businessField: "Design",
-        status: "Aktif"
+        status: "Aktif",
+        description: "Bantu kami menciptakan pengalaman belanja yang menyenangkan bagi jutaan pengguna Shopee di seluruh dunia.",
+        responsibilities: [
+            "Membuat wireframe dan prototipe hi-fi menggunakan Figma",
+            "Berkontribusi pada pemeliharaan design system",
+            "Melakukan user research dan usability testing"
+        ],
+        skills: ["FIGMA", "DESIGN SYSTEM", "PROTOTYPING", "USER RESEARCH"],
+        benefits: [
+            "Diskon Karyawan Shopee",
+            "Makanan Ringan & Kopi Gratis",
+            "Workshop Desain Mingguan"
+        ],
+        companyDescription: "Shopee adalah platform e-commerce terdepan di Asia Tenggara dan Taiwan."
     },
     {
         id: 10,
@@ -238,6 +329,19 @@ export const JOBS_DUMMY: Job[] = [
         isPremium: true,
         workType: "Onsite",
         businessField: "Technology",
-        status: "Aktif"
+        status: "Aktif",
+        description: "Bergabunglah dengan tim iOS kami untuk membangun aplikasi lifestyle terpopuler di Asia Tenggara.",
+        responsibilities: [
+            "Mengembangkan fitur aplikasi iOS menggunakan Swift",
+            "Bekerja dengan UIKit dan SwiftUI",
+            "Melakukan integrasi API dan optimasi memori"
+        ],
+        skills: ["SWIFT", "IOS", "XCODE", "COCOAPODS", "REST API"],
+        benefits: [
+            "Tunjangan Traveloka Points",
+            "Mentoring 1-on-1",
+            "Gym Membership"
+        ],
+        companyDescription: "Traveloka adalah perusahaan teknologi terkemuka di Asia Tenggara yang menyediakan berbagai kebutuhan perjalanan dan gaya hidup dalam satu aplikasi."
     },
 ];

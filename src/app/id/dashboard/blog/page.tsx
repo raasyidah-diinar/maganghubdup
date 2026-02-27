@@ -5,10 +5,11 @@ import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import BlogFilters from "@/components/dashboard/blog/BlogFilters";
 import BlogCard from "@/components/dashboard/blog/BlogCard";
-import { FileX } from "lucide-react";
+import { FileX, Loader2 } from "lucide-react";
 
 export default function BlogPage() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("Semua");
 
     // Filter State
@@ -31,6 +32,12 @@ export default function BlogPage() {
         handleResize();
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Simulated loading delay
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoading(false), 1000);
+        return () => clearTimeout(timer);
     }, []);
 
     // Mock Article Data
@@ -163,8 +170,8 @@ export default function BlogPage() {
                                         key={tab}
                                         onClick={() => setActiveTab(tab)}
                                         className={`pb-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${activeTab === tab
-                                                ? "border-[#E8532F] text-[#E8532F]"
-                                                : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                            ? "border-[#E8532F] text-[#E8532F]"
+                                            : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                                             }`}
                                     >
                                         {tab}
@@ -175,7 +182,16 @@ export default function BlogPage() {
 
                         {/* Content */}
                         <div className="space-y-4">
-                            {showContent ? (
+                            {isLoading ? (
+                                <div className="w-full flex flex-col items-center justify-center bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 py-20">
+                                    <div className="flex flex-col items-center gap-3">
+                                        <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
+                                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400 animate-pulse">
+                                            memuat blog anda...
+                                        </p>
+                                    </div>
+                                </div>
+                            ) : showContent ? (
                                 filteredArticles.map(article => (
                                     <BlogCard key={article.id} {...article} />
                                 ))

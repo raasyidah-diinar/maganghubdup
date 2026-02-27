@@ -120,6 +120,7 @@ export default function MessagesPage() {
     const [messages, setMessages] = useState<Message[]>(initialMessages);
     const [inputText, setInputText] = useState("");
     const [filterMode, setFilterMode] = useState<"all" | "unread">("all");
+    const [isMuted, setIsMuted] = useState(false);
 
     // Close sidebar on mobile by default
     useEffect(() => {
@@ -194,73 +195,33 @@ export default function MessagesPage() {
                 <DashboardHeader onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
 
                 <main className="flex-1 overflow-hidden p-4 md:p-6">
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 h-full flex overflow-hidden">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 h-full flex overflow-hidden">
 
-                        {/* LEFT COLUMN: Navigation (Hidden on mobile if chat selected) */}
-                        <div className={`w-full md:w-64 border-r border-gray-100 dark:border-gray-700 flex flex-col ${selectedMessageId ? 'hidden md:flex' : 'flex'}`}>
-                            <div className="p-4">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-8 h-8 rounded-full bg-[#E8532F] flex items-center justify-center text-white shadow-md shadow-orange-500/20">
-                                        <Inbox size={18} />
-                                    </div>
-                                    <h2 className="font-bold text-lg text-gray-900 dark:text-white">Kotak Pesan</h2>
-                                </div>
-
-                                <button className="w-full bg-[#E8532F] hover:bg-[#d64522] text-white rounded-xl py-3 px-4 flex items-center justify-center gap-2 font-medium transition-colors mb-6 shadow-md shadow-orange-500/20 group">
-                                    <PenSquare size={18} className="group-hover:scale-110 transition-transform" />
-                                    <span>Pesan Baru</span>
-                                    {totalUnread > 0 && (
-                                        <span className="ml-auto bg-white/20 text-white text-xs px-2 py-0.5 rounded-full">
-                                            {totalUnread}
-                                        </span>
-                                    )}
-                                </button>
-
-                                <div className="space-y-1">
-                                    <NavItem icon={<Inbox size={18} />} label="Inbox" count={filteredMessages.length} active />
-                                    <NavItem icon={<File size={18} />} label="Drafts" count={2} />
-                                    <NavItem icon={<Send size={18} />} label="Sent" />
-                                    <NavItem icon={<AlertCircle size={18} />} label="Junk" count={5} />
-                                    <NavItem icon={<Trash2 size={18} />} label="Trash" />
-                                    <NavItem icon={<Archive size={18} />} label="Archive" />
-                                </div>
-
-                                <div className="mt-8">
-                                    <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3 px-3">Labels</h3>
-                                    <div className="space-y-1">
-                                        <NavItem icon={<Users size={18} className="text-blue-500" />} label="Social" count={12} />
-                                        <NavItem icon={<Bell size={18} className="text-yellow-500" />} label="Updates" count={4} />
-                                        <NavItem icon={<Tag size={18} className="text-purple-500" />} label="Promotions" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* MIDDLE COLUMN: Message List (Hidden on mobile if chat selected) */}
-                        <div className={`w-full md:w-80 lg:w-96 border-r border-gray-100 dark:border-gray-700 flex flex-col bg-white dark:bg-gray-800 ${selectedMessageId ? 'hidden md:flex' : 'flex'}`}>
+                        {/* LEFT COLUMN: Message List */}
+                        <div className={`w-full md:w-[380px] border-r border-gray-100 dark:border-gray-700 flex flex-col bg-white dark:bg-gray-800 ${selectedMessageId ? 'hidden md:flex' : 'flex'}`}>
                             {/* Header */}
-                            <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between shrink-0">
+                            <div className="p-6 pb-4 border-b border-gray-50 dark:border-gray-700 flex items-center justify-between shrink-0">
                                 <div className="flex items-center gap-2">
-                                    <h2 className="font-bold text-lg text-gray-900 dark:text-white">Inbox</h2>
-                                    <span className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs px-2 py-0.5 rounded-full font-medium">
-                                        {filteredMessages.length}
+                                    <h2 className="font-bold text-xl text-gray-900 dark:text-white">Inbox</h2>
+                                    <span className="bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs px-2.5 py-1 rounded-full font-bold">
+                                        {messages.filter(m => (m.unreadCount ?? 0) > 0).length}
                                     </span>
                                 </div>
-                                <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-0.5">
+                                <div className="flex bg-gray-100 dark:bg-gray-700 rounded-full p-1">
                                     <button
                                         onClick={() => setFilterMode("all")}
-                                        className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${filterMode === "all"
-                                                ? 'bg-white dark:bg-gray-600 shadow-sm text-gray-900 dark:text-white'
-                                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${filterMode === "all"
+                                            ? 'bg-white dark:bg-gray-600 shadow-sm text-[#E8532F]'
+                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-900'
                                             }`}
                                     >
                                         All
                                     </button>
                                     <button
                                         onClick={() => setFilterMode("unread")}
-                                        className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${filterMode === "unread"
-                                                ? 'bg-white dark:bg-gray-600 shadow-sm text-gray-900 dark:text-white'
-                                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${filterMode === "unread"
+                                            ? 'bg-white dark:bg-gray-600 shadow-sm text-[#E8532F]'
+                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-900'
                                             }`}
                                     >
                                         Unread
@@ -269,13 +230,13 @@ export default function MessagesPage() {
                             </div>
 
                             {/* Search */}
-                            <div className="p-4 pt-2 shrink-0">
+                            <div className="p-6 pt-4 pb-2 shrink-0">
                                 <div className="relative group">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#E8532F] transition-colors" size={16} />
+                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={16} />
                                     <input
                                         type="text"
                                         placeholder="Cari pesan, nama, atau perusahaan..."
-                                        className="w-full bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                                        className="w-full bg-gray-50 dark:bg-gray-700/50 border-none rounded-2xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-gray-200 dark:focus:ring-gray-600 transition-all placeholder:text-gray-400"
                                     />
                                 </div>
                             </div>
@@ -283,11 +244,9 @@ export default function MessagesPage() {
                             {/* List */}
                             <div className="flex-1 overflow-y-auto custom-scrollbar">
                                 {filteredMessages.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center h-full text-center p-8">
-                                        <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-3">
-                                            <Inbox className="w-8 h-8 text-gray-300 dark:text-gray-500" />
-                                        </div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">Tidak ada pesan unread</p>
+                                    <div className="flex flex-col items-center justify-center h-full text-center p-8 opacity-40">
+                                        <Inbox className="w-12 h-12 text-gray-300 mb-3" />
+                                        <p className="text-sm text-gray-500">Tidak ada pesan</p>
                                     </div>
                                 ) : (
                                     filteredMessages.map((msg) => {
@@ -296,29 +255,30 @@ export default function MessagesPage() {
                                             <div
                                                 key={msg.id}
                                                 onClick={() => handleSelectMessage(msg.id)}
-                                                className={`p-4 border-b border-gray-50 dark:border-gray-700/50 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${selectedMessageId === msg.id ? 'bg-orange-50 dark:bg-orange-900/10 border-l-2 border-l-[#E8532F]' : 'border-l-2 border-l-transparent'}`}
+                                                className={`p-6 py-5 border-b border-gray-50 dark:border-gray-700/50 cursor-pointer transition-all ${selectedMessageId === msg.id
+                                                    ? 'bg-gray-50/50 dark:bg-gray-700/30'
+                                                    : 'hover:bg-gray-50/30 dark:hover:bg-gray-700/20'
+                                                    }`}
                                             >
-                                                <div className="flex justify-between items-start mb-1.5">
+                                                <div className="flex justify-between items-start mb-1">
                                                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                                                        <h4 className={`text-sm truncate ${isUnread ? 'font-bold text-gray-900 dark:text-white' : 'font-normal text-gray-700 dark:text-gray-200'}`}>
+                                                        <h4 className="text-[14.5px] font-bold text-gray-900 dark:text-white truncate">
                                                             {msg.sender}
                                                         </h4>
                                                         {isUnread && (
-                                                            <span className="w-2 h-2 rounded-full bg-[#E8532F] flex-shrink-0"></span>
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-[#E8532F] flex-shrink-0"></span>
                                                         )}
                                                     </div>
-                                                    <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-                                                        <span className={`text-xs ${isUnread ? 'text-[#E8532F] font-medium' : 'text-gray-400'}`}>
-                                                            {msg.time}
-                                                        </span>
-                                                    </div>
+                                                    <span className="text-[11.5px] text-gray-400 shrink-0 ml-2">
+                                                        {msg.time}
+                                                    </span>
                                                 </div>
-                                                <div className="flex items-start justify-between gap-2">
-                                                    <p className={`text-xs line-clamp-2 flex-1 ${isUnread ? 'text-gray-900 dark:text-gray-100 font-medium' : 'text-gray-500 dark:text-gray-400'}`}>
+                                                <div className="flex items-start justify-between gap-3">
+                                                    <p className={`text-[12.5px] line-clamp-1 flex-1 leading-snug ${isUnread ? 'text-gray-900 dark:text-white font-medium' : 'text-gray-500 dark:text-gray-400 font-normal'}`}>
                                                         {msg.preview}
                                                     </p>
                                                     {isUnread && (
-                                                        <span className="flex-shrink-0 bg-[#E8532F] text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
+                                                        <span className="shrink-0 bg-[#E8532F] text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-sm shadow-orange-500/20">
                                                             {msg.unreadCount}
                                                         </span>
                                                     )}
@@ -335,7 +295,7 @@ export default function MessagesPage() {
                             {selectedMessage ? (
                                 <>
                                     {/* Chat Header */}
-                                    <div className="h-16 px-6 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between shrink-0 bg-white dark:bg-gray-800 shadow-sm z-10">
+                                    <div className="h-16 px-6 border-b border-gray-50 dark:border-gray-700 flex items-center justify-between shrink-0 bg-white dark:bg-gray-800 shadow-none z-10">
                                         <div className="flex items-center gap-3">
                                             {/* Mobile Back Button */}
                                             <button onClick={() => setSelectedMessageId(null)} className="md:hidden p-1 -ml-2 text-gray-500 hover:bg-gray-100 rounded-full">
@@ -343,61 +303,51 @@ export default function MessagesPage() {
                                             </button>
 
                                             <div className="relative">
-                                                <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden border border-gray-200 dark:border-gray-600">
+                                                <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden border border-gray-100 dark:border-gray-700">
                                                     {selectedMessage.avatar ? (
                                                         <Image src={selectedMessage.avatar} alt={selectedMessage.sender} width={40} height={40} className="object-cover" />
                                                     ) : (
-                                                        <div className="w-full h-full flex items-center justify-center text-gray-500 font-bold bg-gray-100">{selectedMessage.sender.charAt(0)}</div>
+                                                        <div className="w-full h-full flex items-center justify-center text-gray-400 font-bold bg-gray-50 text-sm">{selectedMessage.sender.charAt(0)}</div>
                                                     )}
                                                 </div>
                                                 {selectedMessage.isOnline && (
-                                                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full ring-1 ring-white dark:ring-gray-800"></span>
+                                                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></span>
                                                 )}
                                             </div>
                                             <div>
-                                                <h3 className="font-bold text-gray-900 dark:text-white text-sm">{selectedMessage.sender}</h3>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">{selectedMessage.role || 'User'}</p>
+                                                <h3 className="font-bold text-gray-900 dark:text-white text-[14.5px] leading-tight">{selectedMessage.sender}</h3>
+                                                <p className="text-[11.5px] text-gray-400 dark:text-gray-500">{selectedMessage.role || 'User'}</p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-1">
                                             <IconButton icon={<Phone size={18} />} />
                                             <IconButton icon={<Video size={18} />} />
-                                            <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-2"></div>
+                                            <div className="w-px h-6 bg-gray-100 dark:bg-gray-700 mx-2"></div>
                                             <IconButton icon={<Search size={18} />} />
                                             <IconButton icon={<MoreVertical size={18} />} />
                                         </div>
                                     </div>
 
                                     {/* Chat Messages */}
-                                    <div className="flex-1 overflow-y-auto p-6 bg-gray-50/30 dark:bg-gray-900/50 space-y-6">
+                                    <div className="flex-1 overflow-y-auto p-6 bg-white dark:bg-gray-900/50 space-y-6">
                                         <div className="flex justify-center">
-                                            <span className="bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
-                                                Started 09:00
+                                            <span className="bg-gray-50 dark:bg-gray-800 text-gray-400 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                                                Today
                                             </span>
                                         </div>
 
                                         {(selectedMessage.messages || []).map((msg) => (
                                             <div key={msg.id} className="space-y-1">
                                                 <div className={`flex items-end gap-2 ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
-                                                    {msg.sender === 'them' && (
-                                                        <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden shrink-0 mb-1">
-                                                            {selectedMessage.avatar ? (
-                                                                <Image src={selectedMessage.avatar} alt={selectedMessage.sender} width={24} height={24} className="object-cover" />
-                                                            ) : (
-                                                                <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-gray-500">{selectedMessage.sender.charAt(0)}</div>
-                                                            )}
-                                                        </div>
-                                                    )}
-
-                                                    <div className={`max-w-[80%] md:max-w-[70%] rounded-2xl p-3.5 shadow-sm ${msg.sender === 'me'
+                                                    <div className={`max-w-[80%] md:max-w-[70%] rounded-2xl p-4 ${msg.sender === 'me'
                                                         ? 'bg-[#E8532F] text-white rounded-tr-none'
-                                                        : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-tl-none border border-gray-100 dark:border-gray-600'
+                                                        : 'bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-tl-none border border-gray-100 dark:border-gray-600'
                                                         }`}>
                                                         <p className="text-sm leading-relaxed">{msg.text}</p>
                                                     </div>
                                                 </div>
                                                 {msg.time && (
-                                                    <div className={`flex ${msg.sender === 'me' ? 'justify-end pr-1' : 'justify-start pl-9'} text-[10px] text-gray-400`}>
+                                                    <div className={`flex ${msg.sender === 'me' ? 'justify-end pr-1' : 'justify-start pl-1'} text-[10px] text-gray-400`}>
                                                         {msg.time}
                                                     </div>
                                                 )}
@@ -406,14 +356,14 @@ export default function MessagesPage() {
                                     </div>
 
                                     {/* Input Area */}
-                                    <div className="p-4 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 shrink-0">
-                                        <div className="bg-white dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700 rounded-2xl p-2 focus-within:ring-2 focus-within:ring-[#E8532F]/20 focus-within:border-[#E8532F] transition-all shadow-sm">
+                                    <div className="p-6 pt-2 border-t border-gray-50 dark:border-gray-700 bg-white dark:bg-gray-800 shrink-0">
+                                        <div className="bg-gray-50 dark:bg-gray-700/50 border-none rounded-2xl p-4 focus-within:ring-1 focus-within:ring-gray-200 transition-all">
                                             <textarea
                                                 value={inputText}
                                                 onChange={(e) => setInputText(e.target.value)}
                                                 placeholder={`Ketik pesan untuk ${selectedMessage.sender}...`}
-                                                className="w-full bg-transparent border-none focus:ring-0 text-sm resize-none p-2 max-h-32 text-gray-900 dark:text-white placeholder:text-gray-400"
-                                                rows={1}
+                                                className="w-full bg-transparent border-none focus:ring-0 text-[14.5px] resize-none p-0 mb-4 max-h-32 text-gray-900 dark:text-white placeholder:text-gray-400"
+                                                rows={2}
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter' && !e.shiftKey) {
                                                         e.preventDefault();
@@ -421,28 +371,34 @@ export default function MessagesPage() {
                                                     }
                                                 }}
                                             />
-                                            <div className="flex items-center justify-between px-2 pb-1 pt-1">
-                                                <div className="flex gap-2 text-gray-400">
-                                                    <button className="hover:text-gray-600 dark:hover:text-gray-200 transition-colors hover:bg-gray-100 p-1 rounded-full"><Paperclip size={18} /></button>
-                                                    <button className="hover:text-gray-600 dark:hover:text-gray-200 transition-colors hover:bg-gray-100 p-1 rounded-full"><Smile size={18} /></button>
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    {/* Toggle Switch */}
+                                                    <button
+                                                        onClick={() => setIsMuted(!isMuted)}
+                                                        className={`w-10 h-6 flex items-center rounded-full p-1 transition-colors duration-200 focus:outline-none ${isMuted ? 'bg-[#E8532F]' : 'bg-gray-200'}`}
+                                                    >
+                                                        <div
+                                                            className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-200 ${isMuted ? 'translate-x-4' : ''}`}
+                                                        />
+                                                    </button>
+                                                    <span className="text-[13.5px] text-gray-500 font-medium">Mute thread</span>
                                                 </div>
-                                                <div className="flex items-center gap-4">
-                                                    <div className="flex items-center gap-2 text-gray-400 mr-2 cursor-pointer hover:text-gray-600 transition-colors">
-                                                        <span className="text-xs font-medium">Mute thread</span>
-                                                        <div className="w-8 h-4 bg-gray-200 rounded-full relative">
-                                                            <div className="absolute left-0.5 top-0.5 w-3 h-3 bg-white rounded-full shadow-sm"></div>
-                                                        </div>
-                                                    </div>
+
+                                                <div className="flex items-center gap-2">
+                                                    <button className="text-gray-400 hover:text-gray-600 p-2 transition-colors">
+                                                        <Paperclip size={20} />
+                                                    </button>
                                                     <button
                                                         onClick={handleSendMessage}
                                                         disabled={!inputText.trim()}
-                                                        className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${inputText.trim()
-                                                            ? 'bg-[#E8532F] text-white shadow-md shadow-orange-500/20 hover:bg-[#d64522] hover:shadow-orange-500/30'
-                                                            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                        className={`flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all ${inputText.trim()
+                                                            ? 'bg-[#E8532F] text-white shadow-lg shadow-orange-500/20'
+                                                            : 'bg-gray-100 text-gray-300 cursor-not-allowed'
                                                             }`}
                                                     >
                                                         <span>Send</span>
-                                                        <Send size={14} />
+                                                        <Send size={16} />
                                                     </button>
                                                 </div>
                                             </div>
@@ -451,12 +407,15 @@ export default function MessagesPage() {
                                 </>
                             ) : (
                                 /* Empty State */
-                                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-gray-500">
-                                    <div className="w-24 h-24 bg-gray-50 dark:bg-gray-700/50 rounded-full flex items-center justify-center mb-6 shadow-sm">
-                                        <Inbox className="w-10 h-10 text-gray-300 dark:text-gray-500" strokeWidth={1.5} />
+                                <div className="flex-1 flex flex-col items-center justify-center p-12 text-center bg-white dark:bg-gray-800">
+                                    <div className="w-28 h-28 bg-gray-50 dark:bg-gray-700/50 rounded-full flex items-center justify-center mb-8">
+                                        <div className="w-14 h-14 text-gray-300 dark:text-gray-600 border-[3.5px] border-gray-200 dark:border-gray-600 rounded-2xl flex items-center justify-center relative shadow-sm">
+                                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 border-[3px] border-gray-200 dark:border-gray-600 rounded-full opacity-40"></div>
+                                            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-6 h-1 bg-gray-200 dark:bg-gray-600 rounded-full opacity-40"></div>
+                                        </div>
                                     </div>
-                                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Belum ada pesan dipilih</h3>
-                                    <p className="max-w-xs text-sm text-gray-400">
+                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Belum ada pesan dipilih</h3>
+                                    <p className="max-w-[280px] text-gray-400 dark:text-gray-500 text-[14.5px] leading-relaxed">
                                         Pilih salah satu percakapan dari daftar di sebelah kiri untuk mulai membaca.
                                     </p>
                                 </div>

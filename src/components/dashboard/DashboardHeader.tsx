@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 interface DashboardHeaderProps {
     user?: {
@@ -13,9 +14,10 @@ interface DashboardHeaderProps {
         avatar?: string;
     };
     onMenuClick?: () => void;
+    showSidebarTrigger?: boolean;
 }
 
-export default function DashboardHeader({ user, onMenuClick }: DashboardHeaderProps) {
+export default function DashboardHeader({ user, onMenuClick, showSidebarTrigger = false }: DashboardHeaderProps) {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -57,14 +59,21 @@ export default function DashboardHeader({ user, onMenuClick }: DashboardHeaderPr
         <header className="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 flex items-center justify-between relative z-50">
             {/* Left Section - Sidebar Toggle + Search */}
             <div className="flex items-center gap-4 flex-1 max-w-md">
-                {/* Sidebar Toggle Button */}
-                <button
-                    onClick={onMenuClick}
-                    className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                    aria-label="Toggle sidebar"
-                >
-                    <PanelLeft size={18} />
-                </button>
+                {/* Sidebar Toggle Button (shadcn) */}
+                {showSidebarTrigger && (
+                    <SidebarTrigger className="-ml-1" />
+                )}
+
+                {/* Manual Toggle (for layouts without SidebarProvider) */}
+                {!showSidebarTrigger && onMenuClick && (
+                    <button
+                        onClick={onMenuClick}
+                        className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                        aria-label="Toggle sidebar"
+                    >
+                        <PanelLeft size={18} />
+                    </button>
+                )}
 
                 {/* Search Bar */}
                 <div className="flex-1 relative">

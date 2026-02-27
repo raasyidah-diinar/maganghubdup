@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { AlertTriangle, TrendingUp, CheckCircle } from "lucide-react";
+import { Zap } from "lucide-react";
 
 interface StatisticsCardProps {
     icon: ReactNode;
@@ -21,23 +21,11 @@ export default function StatisticsCard({
     status,
     iconBgColor = "bg-orange-100 dark:bg-orange-900/30"
 }: StatisticsCardProps) {
-    const statusColors = {
-        warning: "text-red-600 dark:text-red-400",
-        info: "text-blue-600 dark:text-blue-400",
-        success: "text-green-600 dark:text-green-400",
-    };
-
-    const statusIcons = {
-        warning: <AlertTriangle size={14} />,
-        info: <TrendingUp size={14} />,
-        success: <CheckCircle size={14} />,
-    };
-
     return (
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow">
             {/* Header */}
             <div className="flex items-start justify-between mb-4">
-                <div className={`${iconBgColor} p-3 rounded-lg text-orange-600 dark:text-orange-400`}>
+                <div className={`${iconBgColor} flex items-center justify-center`}>
                     {icon}
                 </div>
                 <span className="text-xs text-gray-400 dark:text-gray-500 uppercase font-semibold">
@@ -58,8 +46,8 @@ export default function StatisticsCard({
             </p>
 
             {/* Status */}
-            <div className={`flex items-center gap-1.5 text-xs font-medium ${statusColors[status.type]}`}>
-                {statusIcons[status.type]}
+            <div className="mt-3 text-[10px] text-[#F04E30] font-bold flex items-center gap-1">
+                <Zap size={12} fill="currentColor" />
                 <span>{status.text}</span>
             </div>
         </div>

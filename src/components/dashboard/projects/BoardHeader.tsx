@@ -1,43 +1,74 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Plus, MoreHorizontal, LayoutGrid, List } from "lucide-react";
+import { Search, Plus, MoreHorizontal, LayoutGrid, List, ChevronDown, Check } from "lucide-react";
 import ProjectOptions from "./ProjectOptions";
 
 interface BoardHeaderProps {
     title: string;
     onAddTask: () => void;
+    onShare: () => void;
     viewMode: "board" | "list";
     onChangeView: (mode: "board" | "list") => void;
     onOpenArchive: () => void;
+    onOpenAbout: () => void;
 }
 
-export default function BoardHeader({ title, onAddTask, viewMode, onChangeView, onOpenArchive }: BoardHeaderProps) {
+export default function BoardHeader({ title, onAddTask, onShare, viewMode, onChangeView, onOpenArchive, onOpenAbout }: BoardHeaderProps) {
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+    const [isViewDropdownOpen, setIsViewDropdownOpen] = useState(false);
 
     return (
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <div className="flex items-center gap-4">
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h1>
+        <div className="flex items-center justify-between gap-4 w-full">
+            <div className="flex items-center gap-3">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white shrink-0">{title}</h1>
 
-                <div className="flex items-center p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                <div className="relative group">
                     <button
-                        onClick={() => onChangeView("board")}
-                        className={`p-1.5 rounded ${viewMode === "board" ? "bg-white dark:bg-gray-700 text-orange-500 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
+                        onClick={() => setIsViewDropdownOpen(!isViewDropdownOpen)}
+                        className="flex items-center gap-1.5 px-2 py-1.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     >
-                        <LayoutGrid size={16} />
+                        {viewMode === "board" ? <LayoutGrid size={16} className="text-orange-500" /> : <List size={16} className="text-orange-500" />}
+                        <ChevronDown size={14} className={`transition-transform duration-200 ${isViewDropdownOpen ? 'rotate-180' : ''}`} />
                     </button>
-                    <button
-                        onClick={() => onChangeView("list")}
-                        className={`p-1.5 rounded ${viewMode === "list" ? "bg-white dark:bg-gray-700 text-orange-500 shadow-sm" : "text-gray-400 hover:text-gray-600"}`}
-                    >
-                        <List size={16} />
-                    </button>
+
+                    {isViewDropdownOpen && (
+                        <>
+                            <div className="fixed inset-0 z-40" onClick={() => setIsViewDropdownOpen(false)}></div>
+                            <div className="absolute top-full left-0 mt-2 w-32 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-100 dark:border-gray-700 py-1 z-50 animate-in fade-in zoom-in-95 duration-200">
+                                <button
+                                    onClick={() => {
+                                        onChangeView("board");
+                                        setIsViewDropdownOpen(false);
+                                    }}
+                                    className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <LayoutGrid size={14} />
+                                        <span>Board</span>
+                                    </div>
+                                    {viewMode === "board" && <Check size={14} className="text-orange-500" />}
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        onChangeView("list");
+                                        setIsViewDropdownOpen(false);
+                                    }}
+                                    className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <List size={14} />
+                                        <span>List</span>
+                                    </div>
+                                    {viewMode === "list" && <Check size={14} className="text-orange-500" />}
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
-            </div>
 
-            <div className="flex items-center gap-3 w-full md:w-auto">
-                <div className="relative flex-1 md:w-64">
+                {/* Search Bar - Moved next to toggle */}
+                <div className="relative hidden md:block w-64 ml-2">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                     <input
                         type="text"
@@ -45,16 +76,22 @@ export default function BoardHeader({ title, onAddTask, viewMode, onChangeView, 
                         className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
                     />
                 </div>
+            </div>
 
+            <div className="flex items-center gap-3 shrink-0">
                 <button
-                    onClick={onAddTask}
-                    className="flex items-center gap-2 bg-[#E8532F] hover:bg-[#d64522] text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md shadow-orange-500/20 transition-all uppercase"
+                    onClick={onShare}
+                    className="flex items-center gap-2 bg-[#E8532F] hover:bg-[#d64522] text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md shadow-orange-500/20 transition-all"
                 >
                     <Plus size={16} strokeWidth={3} />
-                    <span>Tugas</span>
+                    <span>Share</span>
                 </button>
 
-                {/* PERBAIKAN: ProjectOptions dipindahkan keluar dari button */}
+                {/* Search for mobile */}
+                <button className="md:hidden p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
+                    <Search size={20} />
+                </button>
+
                 <div className="relative z-50">
                     <button
                         onClick={() => setIsOptionsOpen(!isOptionsOpen)}
@@ -65,11 +102,11 @@ export default function BoardHeader({ title, onAddTask, viewMode, onChangeView, 
                     >
                         <MoreHorizontal size={20} />
                     </button>
-                    {/* ProjectOptions sekarang di luar button */}
                     <ProjectOptions
                         isOpen={isOptionsOpen}
                         onClose={() => setIsOptionsOpen(false)}
                         onOpenArchive={onOpenArchive}
+                        onOpenAbout={onOpenAbout}
                     />
                 </div>
             </div>

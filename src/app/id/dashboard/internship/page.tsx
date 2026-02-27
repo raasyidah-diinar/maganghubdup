@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { Search, MapPin, Calendar, Building2, ChevronRight, Filter } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Mock data based on user request
 const internships = [
@@ -51,10 +53,39 @@ const tabs = [
     "Selesai"
 ];
 
+const InternshipSkeleton = () => (
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm relative overflow-hidden">
+        <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gray-100 dark:bg-gray-700 rounded-l-xl" />
+        <div className="flex items-start gap-4">
+            <div className="ml-2 w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-700 animate-pulse flex-shrink-0" />
+            <div className="flex-1 space-y-3">
+                <div className="flex justify-between items-start gap-4">
+                    <div className="flex-1 space-y-2">
+                        <Skeleton className="h-5 w-1/2" />
+                        <Skeleton className="h-4 w-1/3" />
+                    </div>
+                    <Skeleton className="h-5 w-20 rounded-full" />
+                </div>
+                <div className="flex gap-4">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-24" />
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
 export default function InternshipPage() {
+    const router = useRouter();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [activeTab, setActiveTab] = useState("Pengajuan"); // Default to Pengajuan to show empty state as per request example logic
+    const [isLoading, setIsLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState("Semua"); // Default to Semua
     const [searchQuery, setSearchQuery] = useState("");
+
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoading(false), 1000);
+        return () => clearTimeout(timer);
+    }, []);
 
     // Close sidebar on mobile by default
     useEffect(() => {
@@ -145,8 +176,8 @@ export default function InternshipPage() {
                                         key={tab}
                                         onClick={() => setActiveTab(tab)}
                                         className={`pb-3 text-sm font-medium transition-colors relative ${activeTab === tab
-                                                ? "text-[#E8532F] dark:text-orange-400"
-                                                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                                            ? "text-[#E8532F] dark:text-orange-400"
+                                            : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                                             }`}
                                     >
                                         {tab}
@@ -159,18 +190,26 @@ export default function InternshipPage() {
                         </div>
 
                         {/* Content */}
-                        {filteredInternships.length > 0 ? (
+                        {isLoading ? (
                             <div className="space-y-4">
-                                {filteredInternships.map((internship) => (
+                                {[...Array(3)].map((_, i) => (
+                                    <InternshipSkeleton key={i} />
+                                ))}
+                            </div>
+                        ) : filteredInternships.length > 0 ? (
+                            <div className="space-y-4">
+                                {filteredInternships.map((internship, index) => (
                                     <div
                                         key={internship.id}
-                                        className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:border-orange-200 dark:hover:border-orange-900/50 transition-all group shadow-sm hover:shadow-md cursor-pointer relative overflow-hidden"
+                                        onClick={() => router.push(`/id/dashboard/internship/${internship.id}`)}
+                                        className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:border-orange-200 dark:hover:border-orange-900/50 transition-all group shadow-sm hover:shadow-md cursor-pointer relative overflow-hidden animate-slide-up opacity-0"
+                                        style={{ animationDelay: `${index * 0.1}s` }}
                                     >
                                         <div className="flex items-start gap-4">
                                             {/* Left Accent Border */}
                                             <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${internship.status === "SELESAI" || internship.status === "AKTIF"
-                                                    ? "bg-orange-500"
-                                                    : "bg-orange-400"
+                                                ? "bg-orange-500"
+                                                : "bg-orange-400"
                                                 } rounded-l-xl`} />
 
                                             {/* Company Logo/Icon */}

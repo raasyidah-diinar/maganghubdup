@@ -2,7 +2,7 @@
 
 import { MapPin, Briefcase, Users, CheckCircle2, Bookmark } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type PlaceCardListProps = {
@@ -17,6 +17,7 @@ type PlaceCardListProps = {
   totalAlumni: number;
   isVerified?: boolean;
   isLoading?: boolean;
+  isInDashboard?: boolean;
 };
 
 export default function PlaceCardList({
@@ -31,13 +32,17 @@ export default function PlaceCardList({
   totalAlumni,
   isVerified = false,
   isLoading = false,
+  isInDashboard = false,
 }: PlaceCardListProps) {
   const router = useRouter();
 
-  if (isLoading) return null;
+  const searchParams = useSearchParams();
+  const isDashboardView = searchParams.get('view') === 'dashboard' || isInDashboard;
 
   const handleCompanyClick = () => {
-    router.push(`/tempat-magang/${id}`);
+    const detailPath = `/id/magang/${id}`;
+    const route = isDashboardView ? `${detailPath}?view=dashboard` : detailPath;
+    router.push(route);
   };
 
   return (

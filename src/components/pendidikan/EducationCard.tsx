@@ -2,7 +2,7 @@
 
 import { MapPin, Briefcase, Users, CheckCircle2, Bookmark } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type EducationCardProps = {
@@ -33,11 +33,13 @@ export default function EducationCard({
   isLoading = false,
 }: EducationCardProps) {
   const router = useRouter();
-
-  if (isLoading) return null;
+  const searchParams = useSearchParams();
+  const isDashboardView = searchParams.get('view') === 'dashboard';
 
   const handleInstitutionClick = () => {
-    router.push(`/lembaga-pendidikan/${id}`);
+    const detailPath = `/id/pendidikan/${id}`;
+    const route = isDashboardView ? `${detailPath}?view=dashboard` : detailPath;
+    router.push(route);
   };
 
   return (

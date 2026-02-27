@@ -1,6 +1,8 @@
 "use client";
 
 import { Calendar, Bookmark, Tag } from "lucide-react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 type BlogCardListProps = {
   image: string;
@@ -9,6 +11,7 @@ type BlogCardListProps = {
   title: string;
   description: string;
   tags: string[];
+  slug: string;
   author: {
     name: string;
     role: string;
@@ -25,6 +28,7 @@ export default function BlogCardList({
   title,
   description,
   tags,
+  slug,
   author,
   onBookmark,
   isLoading = false,
@@ -39,86 +43,95 @@ export default function BlogCardList({
     return name.slice(0, 2).toUpperCase();
   };
 
+  const searchParams = useSearchParams();
+  const isDashboardView = searchParams.get('view') === 'dashboard';
+  const detailLink = isDashboardView ? `/id/blogs/${slug}?view=dashboard` : `/id/blogs/${slug}`;
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-row h-52">
-      {/* Image - Smaller fixed width on left */}
-      <div className="relative w-80 h-full flex-shrink-0 overflow-hidden">
-        <img
-          src={image}
-          alt={title}
-          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-        />
-        {/* Category Badge */}
-        <div className="absolute top-4 left-4">
-          <span className="bg-white dark:bg-gray-800 text-orange-600 dark:text-orange-500 text-xs font-semibold px-2.5 py-1 rounded uppercase tracking-wide">
-            {category}
-          </span>
-        </div>
-      </div>
-
-      {/* Content - Fills remaining space */}
-      <div className="flex-1 px-8 py-6 flex flex-col justify-between">
-        <div>
-          {/* Date */}
-          <div className="flex items-center gap-2 text-orange-500 text-sm mb-3">
-            <Calendar size={16} />
-            <span>{date}</span>
-          </div>
-
-          {/* Title */}
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 hover:text-orange-600 dark:hover:text-orange-500 transition-colors cursor-pointer line-clamp-1">
-            {title}
-          </h3>
-
-          {/* Description */}
-          <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-1">
-            {description}
-          </p>
-
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2">
-            {tags.map((tag, index) => (
-              <span
-                key={index}
-                className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400"
-              >
-                <Tag size={12} />
-                {tag}
-              </span>
-            ))}
+    <Link href={detailLink} className="block">
+      <div className="group bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:h-52 border border-gray-100 dark:border-gray-700">
+        {/* Image - Smaller fixed width on left */}
+        <div className="relative w-full md:w-80 h-48 md:h-full flex-shrink-0 overflow-hidden">
+          <img
+            src={image}
+            alt={title}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+          {/* Category Badge */}
+          <div className="absolute top-4 left-4">
+            <span className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm text-orange-600 dark:text-orange-500 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">
+              {category}
+            </span>
           </div>
         </div>
 
-        {/* Author & Bookmark */}
-        <div className="flex items-center justify-between pt-4">
-          <div className="flex items-center gap-3">
-            {/* Avatar */}
-            <div className="w-9 h-9 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
-              <span className="text-orange-600 dark:text-orange-500 font-bold text-xs">
-                {getInitials(author.name)}
-              </span>
+        {/* Content - Fills remaining space */}
+        <div className="flex-1 p-5 md:px-8 md:py-6 flex flex-col justify-between">
+          <div>
+            {/* Date */}
+            <div className="flex items-center gap-2 text-gray-400 dark:text-gray-500 text-xs mb-2">
+              <Calendar size={14} />
+              <span>{date}</span>
             </div>
 
-            {/* Author Info */}
-            <div>
-              <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                {author.name}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {author.role}
-              </p>
+            {/* Title */}
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-orange-600 dark:group-hover:text-orange-500 transition-colors line-clamp-1">
+              {title}
+            </h3>
+
+            {/* Description */}
+            <p className="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-1">
+              {description}
+            </p>
+
+            {/* Tags */}
+            <div className="flex flex-wrap gap-2">
+              {tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="flex items-center gap-1 text-[11px] text-gray-400 dark:text-gray-500"
+                >
+                  <Tag size={12} />
+                  {tag}
+                </span>
+              ))}
             </div>
           </div>
 
-          {/* Bookmark Button */}
-          <button
-            onClick={onBookmark}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-          >
-            <Bookmark size={18} className="text-gray-400 dark:text-gray-500 hover:text-orange-500" />
-          </button>
+          {/* Author & Bookmark */}
+          <div className="flex items-center justify-between pt-4 border-t border-gray-50 dark:border-gray-700 md:border-none">
+            <div className="flex items-center gap-3">
+              {/* Avatar */}
+              <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                <span className="text-orange-600 dark:text-orange-500 font-bold text-xs">
+                  {getInitials(author.name)}
+                </span>
+              </div>
+
+              {/* Author Info */}
+              <div>
+                <p className="text-xs font-bold text-gray-900 dark:text-white">
+                  {author.name}
+                </p>
+                <p className="text-[10px] text-gray-400 dark:text-gray-500">
+                  {author.role}
+                </p>
+              </div>
+            </div>
+
+            {/* Bookmark Button */}
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                onBookmark?.();
+              }}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-300 dark:text-gray-600 hover:text-orange-500 dark:hover:text-orange-500"
+            >
+              <Bookmark size={18} />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

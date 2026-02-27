@@ -1,6 +1,7 @@
 import { Bookmark, MapPin, Users, Briefcase, Check, Building2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type JobCardListProps = {
@@ -71,7 +72,9 @@ export default function JobCardList({
       </div>
     );
   }
-  const detailLink = isInDashboard ? `/id/dashboard/jobs/${id}` : `/id/jobs/${id}`;
+  const searchParams = useSearchParams();
+  const isDashboardView = searchParams.get('view') === 'dashboard' || isInDashboard;
+  const detailLink = isDashboardView ? `/id/jobs/${id}?view=dashboard` : `/id/jobs/${id}`;
 
   return (
     <Link href={detailLink} className="block">

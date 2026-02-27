@@ -1,125 +1,17 @@
 "use client";
 import { useState, useCallback, useEffect } from "react";
-import { Grid2X2, List, Loader2 } from "lucide-react";
-import SidebarFilter, { FilterItem } from "@/components/layout/FilterSidebar";
+import { Grid2X2, List, Loader2, Filter } from "lucide-react";
+import SidebarFilter, { FilterItem, useSidebarFilter } from "@/components/layout/FilterSidebar";
 import MemberCard from "@/components/members/MemberCard";
 import MemberCardList from "@/components/members/MemberCardList";
 import JobSearchFilter from "@/components/jobs/JobsSearchFilter";
 
-const MEMBERS_DUMMY = [
-  {
-    id: 1,
-    name: "Vernon Chwe",
-    avatar: "/vernon.jpg",
-    educationLevel: "S1 - Teknik Informatika",
-    institution: "Universitas Indonesia",
-    city: "Jakarta Selatan",
-    subdistrict: "Cilandak",
-    skills: ["React", "Node.js", "Python"],
-    interests: ["Web Development", "AI/ML"],
-    internshipStatus: "Sedang Magang",
-    currentCompany: "Tokopedia",
-    rating: 4.8,
-    completedProjects: 12,
-    isVerified: true,
-    role: "Full Stack Developer",
-    timePosted: "1 jam lalu",
-  },
-  {
-    id: 2,
-    name: "Siti Nurhaliza",
-    avatar: "/hyein.png",
-    educationLevel: "D3 - Desain Grafis",
-    institution: "Politeknik Negeri Bandung",
-    city: "Bandung",
-    subdistrict: "Coblong",
-    skills: ["Figma", "Adobe XD", "Illustrator"],
-    interests: ["UI/UX Design", "Product Design"],
-    internshipStatus: "Mencari Magang",
-    currentCompany: null,
-    rating: 4.5,
-    completedProjects: 8,
-    isVerified: true,
-    role: "UX Researcher",
-    timePosted: "30 menit lalu",
-  },
-  {
-    id: 3,
-    name: "Ahmad Fauzi",
-    avatar: "/joshua.png",
-    educationLevel: "S1 - Sistem Informasi",
-    institution: "Institut Teknologi Bandung",
-    city: "Bandung",
-    subdistrict: "Coblong",
-    skills: ["JavaScript", "Vue.js", "PHP"],
-    interests: ["Web Development", "Backend Development"],
-    internshipStatus: "Mencari Magang",
-    currentCompany: null,
-    rating: 4.6,
-    completedProjects: 5,
-    isVerified: false,
-    role: "Backend Developer",
-    timePosted: "2 jam lalu",
-  },
-  {
-    id: 4,
-    name: "Dewi Lestari",
-    avatar: "/rei.png",
-    educationLevel: "SMK - Rekayasa Perangkat Lunak",
-    institution: "SMK Telkom Malang",
-    city: "Malang",
-    subdistrict: "Lowokwaru",
-    skills: ["HTML", "CSS", "JavaScript", "React"],
-    interests: ["Frontend Development", "Mobile Development"],
-    internshipStatus: "Sedang Magang",
-    currentCompany: "Gojek",
-    rating: 4.9,
-    completedProjects: 15,
-    isVerified: true,
-    role: "Frontend Developer",
-    timePosted: "45 menit lalu",
-  },
-  {
-    id: 5,
-    name: "Rizky Pratama",
-    avatar: "/martin.png",
-    educationLevel: "S1 - Teknik Komputer",
-    institution: "Universitas Brawijaya",
-    city: "Malang",
-    subdistrict: "Sukun",
-    skills: ["Java", "Spring Boot", "MySQL"],
-    interests: ["Backend Development", "DevOps"],
-    internshipStatus: "Selesai Magang",
-    currentCompany: null,
-    rating: 4.7,
-    completedProjects: 20,
-    isVerified: true,
-    role: "DevOps Engineer",
-    timePosted: "3 jam lalu",
-  },
-  {
-    id: 6,
-    name: "Putri Ayu",
-    avatar: "/kazuha.png",
-    educationLevel: "D4 - Teknologi Informasi",
-    institution: "Politeknik Negeri Malang",
-    city: "Malang",
-    subdistrict: "Lowokwaru",
-    skills: ["Python", "Django", "PostgreSQL"],
-    interests: ["Backend Development", "Data Science"],
-    internshipStatus: "Mencari Magang",
-    currentCompany: null,
-    rating: 4.4,
-    completedProjects: 6,
-    isVerified: false,
-    role: "Data Scientist",
-    timePosted: "1 jam lalu",
-  },
-];
+import { MEMBERS_DUMMY } from "@/lib/constants/members";
 
 export default function MembersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const { mobileOpen, openMobile, closeMobile } = useSidebarFilter();
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [selectedSubdistricts, setSelectedSubdistricts] = useState<string[]>([]);
   const [selectedEducationLevel, setSelectedEducationLevel] = useState<string>("Semua Jenjang");
@@ -179,6 +71,8 @@ export default function MembersPage() {
       type: "dropdown",
       options: educationLevels,
       selected: selectedEducationLevel,
+      isLoading: isLoading,
+      loadingText: "Memuat data pendidikan...",
     },
     // Tampilkan filter Kecamatan sebagai checkbox jika ada kota yang dipilih
     ...(currentSubdistricts.length > 0 ? [{
@@ -196,6 +90,8 @@ export default function MembersPage() {
       type: "checkbox",
       options: skillsOptions,
       selected: selectedSkills,
+      isLoading: isLoading,
+      loadingText: "Memuat data...",
     },
     {
       label: "Status Magang",
@@ -366,15 +262,31 @@ export default function MembersPage() {
           filters={filters}
           onFilterChange={handleFilterChange}
           onReset={handleReset}
+          mobileOpen={mobileOpen}
+          onMobileClose={closeMobile}
         />
 
         {/* Member Cards */}
         <div className="flex-1 min-h-[400px] relative">
+          {/* Mobile trigger button */}
+          <div className="lg:hidden mb-4">
+            <button
+              onClick={openMobile}
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 font-semibold text-sm hover:border-orange-300 hover:text-orange-500 transition-all"
+            >
+              <Filter size={16} />
+              Filter Member
+            </button>
+          </div>
+
           {isLoading ? (
-            <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-center bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 py-12">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 animate-pulse">
-                memuat data kandidat...
-              </p>
+            <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-start bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 pt-12 pb-24">
+              <div className="flex flex-col items-center gap-4">
+                <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 animate-pulse">
+                  Memuat data kandidat...
+                </p>
+              </div>
             </div>
           ) : filteredMembers.length > 0 ? (
             <div
@@ -386,9 +298,9 @@ export default function MembersPage() {
             >
               {filteredMembers.map((member) =>
                 viewMode === "grid" ? (
-                  <MemberCard key={member.id} {...member} />
+                  <MemberCard key={member.id} {...member} slug={member.slug} />
                 ) : (
-                  <MemberCardList key={member.id} {...member} />
+                  <MemberCardList key={member.id} {...member} slug={member.slug} />
                 )
               )}
             </div>

@@ -16,10 +16,11 @@ type MemberCardListProps = {
   skills: string[];
   interests: string[];
   internshipStatus: string;
-  currentCompany: string | null;
+  currentCompany?: string | null;
   rating: number;
   completedProjects: number;
   isVerified: boolean;
+  slug: string;
   timePosted?: string;
   role?: string;
   isLoading?: boolean;
@@ -36,6 +37,7 @@ export default function MemberCardList({
   skills,
   interests,
   internshipStatus,
+  slug,
   timePosted = "1 jam lalu",
   role = "Software Developer",
   isLoading = false,
@@ -62,7 +64,7 @@ export default function MemberCardList({
   };
 
   const handleNameClick = () => {
-    router.push(`/anggota/${id}`);
+    router.push(`/id/members/${slug}`);
   };
 
   return (

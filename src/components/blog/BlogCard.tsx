@@ -1,6 +1,8 @@
 "use client";
 
 import { Calendar, Bookmark, Tag } from "lucide-react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 type BlogCardProps = {
   image: string;
@@ -9,6 +11,7 @@ type BlogCardProps = {
   title: string;
   description: string;
   tags: string[];
+  slug: string;
   author: {
     name: string;
     role: string;
@@ -25,6 +28,7 @@ export default function BlogCard({
   title,
   description,
   tags,
+  slug,
   author,
   onBookmark,
   isLoading = false,
@@ -39,84 +43,93 @@ export default function BlogCard({
     return name.slice(0, 2).toUpperCase();
   };
 
+  const searchParams = useSearchParams();
+  const isDashboardView = searchParams.get('view') === 'dashboard';
+  const detailLink = isDashboardView ? `/id/blogs/${slug}?view=dashboard` : `/id/blogs/${slug}`;
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
-      {/* Image */}
-      <div className="relative h-52 w-full overflow-hidden flex-shrink-0">
-        <img
-          src={image}
-          alt={title}
-          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-        />
-        {/* Category Badge */}
-        <div className="absolute top-4 left-4">
-          <span className="bg-white dark:bg-gray-800 text-orange-600 dark:text-orange-500 text-xs font-semibold px-3 py-1.5 rounded uppercase tracking-wide">
-            {category}
-          </span>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-6 flex flex-col flex-1">
-        {/* Date */}
-        <div className="flex items-center gap-2 text-orange-500 text-sm mb-3">
-          <Calendar size={16} />
-          <span>{date}</span>
+    <Link href={detailLink} className="block h-full">
+      <div className="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 h-full flex flex-col border-t-4 border-orange-500 hover:-translate-y-1">
+        {/* Image */}
+        <div className="relative h-48 w-full overflow-hidden flex-shrink-0">
+          <img
+            src={image}
+            alt={title}
+            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+          />
         </div>
 
-        {/* Title */}
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 hover:text-orange-600 dark:hover:text-orange-500 transition-colors cursor-pointer">
-          {title}
-        </h3>
-
-        {/* Description */}
-        <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
-          {description}
-        </p>
-
-        {/* Tags */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          {tags.map((tag, index) => (
-            <span
-              key={index}
-              className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400"
-            >
-              <Tag size={14} />
-              {tag}
+        {/* Content */}
+        <div className="p-5 flex flex-col flex-1">
+          {/* Category & Date Row */}
+          <div className="flex flex-col gap-2 mb-3">
+            <span className="w-fit bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">
+              {category}
             </span>
-          ))}
-        </div>
 
-        {/* Author & Bookmark - Push to bottom */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700 mt-auto">
-          <div className="flex items-center gap-3">
-            {/* Avatar */}
-            <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
-              <span className="text-orange-600 dark:text-orange-500 font-bold text-sm">
-                {getInitials(author.name)}
-              </span>
-            </div>
-
-            {/* Author Info */}
-            <div>
-              <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                {author.name}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {author.role}
-              </p>
+            <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 text-xs">
+              <Calendar size={14} />
+              <span>{date}</span>
             </div>
           </div>
 
-          {/* Bookmark Button */}
-          <button
-            onClick={onBookmark}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-          >
-            <Bookmark size={20} className="text-gray-400 dark:text-gray-500 hover:text-orange-500" />
-          </button>
+          {/* Title */}
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-500 transition-colors">
+            {title}
+          </h3>
+
+          {/* Description */}
+          <p className="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-3 leading-relaxed">
+            {description}
+          </p>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2 mb-6 mt-auto">
+            {tags.map((tag, index) => (
+              <span
+                key={index}
+                className="flex items-center gap-1 text-[11px] text-gray-400 dark:text-gray-500"
+              >
+                <Tag size={12} />
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {/* Footer: Author & Bookmark */}
+          <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-3">
+              {/* Avatar */}
+              <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                <span className="text-orange-600 dark:text-orange-500 font-bold text-xs">
+                  {getInitials(author.name)}
+                </span>
+              </div>
+
+              {/* Author Info */}
+              <div className="flex flex-col">
+                <span className="text-xs font-bold text-gray-900 dark:text-white">
+                  {author.name}
+                </span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                  {author.role}
+                </span>
+              </div>
+            </div>
+
+            {/* Bookmark Button */}
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                onBookmark?.();
+              }}
+              className="text-gray-300 dark:text-gray-600 hover:text-orange-500 dark:hover:text-orange-500 transition-colors"
+            >
+              <Bookmark size={18} />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

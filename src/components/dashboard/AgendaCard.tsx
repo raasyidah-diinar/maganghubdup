@@ -14,40 +14,42 @@ export default function AgendaCard({
     type = "INTERVIEW USER",
     title = "UI/UX Designer",
     company = "Gojek",
-    dateTime = "Rabu, 10:00 WIB",
+    dateTime = "Besok, 10:00 WIB",
     onAction
 }: AgendaCardProps) {
     return (
-        <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 rounded-xl p-6 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-[#101828] rounded-[24px] p-6 text-gray-900 dark:text-white border border-gray-100 dark:border-gray-800 shadow-xl relative overflow-hidden">
             {/* Header */}
-            <div className="flex items-center gap-2 mb-4">
-                <Calendar size={16} className="text-orange-400" />
-                <h3 className="text-lg font-bold">Agenda Terdekat</h3>
+            <div className="flex items-center gap-2 mb-6">
+                <Calendar size={20} className="text-[#F97316]" />
+                <h3 className="text-lg font-bold text-[#F97316]">Agenda Terdekat</h3>
             </div>
 
-            {/* Type Badge */}
-            <div className="inline-flex items-center gap-2 bg-orange-500/20 px-3 py-1 rounded-full text-xs font-semibold text-orange-400 mb-4">
-                {type}
-            </div>
+            {/* Inner Card */}
+            <div className="bg-gray-50 dark:bg-[#1A2232]/80 rounded-2xl p-6 border border-gray-200 dark:border-white/10 shadow-inner">
+                {/* Type */}
+                <div className="text-[#F97316] text-[11px] font-bold uppercase tracking-wider mb-2">
+                    {type}
+                </div>
 
-            {/* Event Details */}
-            <div className="mb-4">
-                <h4 className="text-xl font-bold mb-1">
+                {/* Event Details */}
+                <h4 className="text-gray-900 dark:text-white text-[17px] font-bold mb-4">
                     {company} - {title}
                 </h4>
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                    <Clock size={14} />
+
+                <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6 font-medium">
+                    <Clock size={16} />
                     <span>{dateTime}</span>
                 </div>
-            </div>
 
-            {/* Action Button */}
-            <button
-                onClick={onAction}
-                className="w-full bg-gradient-to-r from-[#E8532F] via-[#FF6B35] to-[#FFA500] text-white font-semibold py-3 rounded-lg hover:opacity-90 transition-opacity"
-            >
-                Persiapan
-            </button>
+                {/* Action Button */}
+                <button
+                    onClick={onAction}
+                    className="w-full bg-gradient-to-r from-[#EA580C] to-[#F97316] text-white font-bold py-2 rounded-xl hover:opacity-90 transition-all shadow-md text-[13px]"
+                >
+                    Persiapan
+                </button>
+            </div>
         </div>
     );
 }

@@ -2,7 +2,7 @@
 
 import { MapPin, Briefcase, Users, CheckCircle2, Bookmark, GraduationCap } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type EducationCardListProps = {
     id: number;
@@ -30,9 +30,13 @@ export default function EducationCardList({
     isVerified = false,
 }: EducationCardListProps) {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const isDashboardView = searchParams.get('view') === 'dashboard';
 
     const handleInstitutionClick = () => {
-        router.push(`/lembaga-pendidikan/${id}`);
+        const detailPath = `/id/pendidikan/${id}`;
+        const route = isDashboardView ? `${detailPath}?view=dashboard` : detailPath;
+        router.push(route);
     };
 
     return (

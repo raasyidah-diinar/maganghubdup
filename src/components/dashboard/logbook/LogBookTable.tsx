@@ -10,21 +10,25 @@ export interface LogEntry {
     uraian: string;
     industri: boolean;
     pendidikan: boolean;
+    industryName?: string;
+    tasks?: string[];
+    attachments?: { name: string; url: string }[];
 }
 
 interface LogBookTableProps {
     data: LogEntry[];
     isLoading?: boolean;
+    onShowDetail?: (entry: LogEntry) => void;
 }
 
-export default function LogBookTable({ data, isLoading }: LogBookTableProps) {
+export default function LogBookTable({ data, isLoading, onShowDetail }: LogBookTableProps) {
     return (
         <div className="relative group min-h-[400px]">
             {/* Loading Overlay within Table Area */}
             {isLoading && (
                 <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/60 dark:bg-gray-800/60 backdrop-blur-[1px] rounded-xl">
                     <div className="flex flex-col items-center gap-2">
-                        <Loader2 className="w-8 h-8 text-[#E8532F] animate-spin" />
+                        <Loader2 className="w-10 h-10 text-[#E8532F] animate-spin" />
                         <span className="text-xs font-bold text-gray-500">Memuat Data...</span>
                     </div>
                 </div>
@@ -49,22 +53,26 @@ export default function LogBookTable({ data, isLoading }: LogBookTableProps) {
                     <table className="w-full text-left border-collapse min-w-[1000px]">
                         <thead>
                             <tr className="border-b border-gray-100 dark:border-gray-700">
-                                <th className="px-5 py-4 text-sm font-semibold text-gray-800 dark:text-gray-200">Tgl Laporan</th>
-                                <th className="px-5 py-4 text-sm font-semibold text-gray-800 dark:text-gray-200">Periode</th>
-                                <th className="px-5 py-4 text-sm font-semibold text-gray-800 dark:text-gray-200">Proyek</th>
-                                <th className="px-5 py-4 text-sm font-semibold text-gray-800 dark:text-gray-200 w-[40%]">Uraian</th>
-                                <th className="px-5 py-4 text-sm font-semibold text-gray-800 dark:text-gray-200 text-center">Industri</th>
-                                <th className="px-5 py-4 text-sm font-semibold text-gray-800 dark:text-gray-200 text-center">Pendidikan</th>
+                                <th className="px-5 py-2.5 text-sm font-semibold text-gray-800 dark:text-gray-200">Tgl Laporan</th>
+                                <th className="px-5 py-2.5 text-sm font-semibold text-gray-800 dark:text-gray-200">Periode</th>
+                                <th className="px-5 py-2.5 text-sm font-semibold text-gray-800 dark:text-gray-200">Proyek</th>
+                                <th className="px-5 py-2.5 text-sm font-semibold text-gray-800 dark:text-gray-200 w-[40%]">Uraian</th>
+                                <th className="px-5 py-2.5 text-sm font-semibold text-gray-800 dark:text-gray-200 text-center">Industri</th>
+                                <th className="px-5 py-2.5 text-sm font-semibold text-gray-800 dark:text-gray-200 text-center">Pendidikan</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50 dark:divide-gray-700/50">
                             {data.map((row) => (
-                                <tr key={row.id} className="hover:bg-gray-50/30 dark:hover:bg-gray-700/20 transition-colors">
-                                    <td className="px-5 py-4 text-sm text-gray-600 dark:text-gray-400">{row.tglLaporan}</td>
-                                    <td className="px-5 py-4 text-sm text-gray-600 dark:text-gray-400">{row.periode}</td>
-                                    <td className="px-5 py-4 text-sm font-bold text-gray-900 dark:text-white">{row.proyek}</td>
-                                    <td className="px-5 py-4 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{row.uraian}</td>
-                                    <td className="px-5 py-4 text-center">
+                                <tr
+                                    key={row.id}
+                                    onClick={() => onShowDetail?.(row)}
+                                    className="hover:bg-gray-50/30 dark:hover:bg-gray-700/20 transition-colors cursor-pointer"
+                                >
+                                    <td className="px-5 py-3 text-sm text-gray-600 dark:text-gray-400">{row.tglLaporan}</td>
+                                    <td className="px-5 py-3 text-sm text-gray-600 dark:text-gray-400">{row.periode}</td>
+                                    <td className="px-5 py-3 text-sm font-bold text-gray-900 dark:text-white">{row.proyek}</td>
+                                    <td className="px-5 py-3 text-sm text-gray-600 dark:text-gray-400 truncate max-w-[400px]" title={row.uraian}>{row.uraian}</td>
+                                    <td className="px-5 py-3 text-center">
                                         <div className={`w-5 h-5 rounded-full flex items-center justify-center mx-auto border ${row.industri
                                             ? "bg-white border-emerald-500 text-emerald-500"
                                             : "bg-white border-gray-200 text-gray-200"
@@ -72,7 +80,7 @@ export default function LogBookTable({ data, isLoading }: LogBookTableProps) {
                                             <Check size={12} strokeWidth={3} />
                                         </div>
                                     </td>
-                                    <td className="px-5 py-4 text-center">
+                                    <td className="px-5 py-3 text-center">
                                         <div className={`w-5 h-5 rounded-full flex items-center justify-center mx-auto border ${row.pendidikan
                                             ? "bg-white border-emerald-500 text-emerald-500"
                                             : "bg-white border-gray-200 text-gray-200"

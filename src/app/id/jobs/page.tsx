@@ -1,19 +1,24 @@
 "use client";
 import { useState, useCallback, useEffect } from "react";
-import { Grid2X2, List, Briefcase, Loader2 } from "lucide-react";
-import SidebarFilter, { FilterItem } from "@/components/layout/FilterSidebar";
+import { Grid2X2, List, Briefcase, Loader2, Filter } from "lucide-react";
+import SidebarFilter, { FilterItem, useSidebarFilter } from "@/components/layout/FilterSidebar";
 import JobCard from "@/components/jobs/JobCard";
 import JobCardList from "@/components/jobs/JobCardList";
 import JobSearchFilter from "@/components/jobs/JobsSearchFilter";
 import { JOBS_DUMMY } from "@/lib/constants/jobs";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 export default function JobsPage() {
   const pathname = usePathname();
-  const isInDashboard = pathname?.includes("/dashboard");
+  const searchParams = useSearchParams();
+  const view = searchParams.get("view");
+  const isDashboardView = view === "dashboard";
+
+  const isInDashboard = pathname?.includes("/dashboard") || isDashboardView;
 
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const { mobileOpen, openMobile, closeMobile } = useSidebarFilter();
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 2000);
@@ -134,112 +139,114 @@ export default function JobsPage() {
     return matchesSearch && matchesLocation && matchesBusiness && matchesCity && matchesSubdistrict && matchesPolicy;
   });
 
-  return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Search Filter */}
-        <div className="mb-8">
-          <JobSearchFilter
-            onSearchChange={setSearchQuery}
-            onLocationChange={(value) => {
-              setLocationQuery(value);
-              handleFilterChange("Kota", value);
-            }}
-          />
-        </div>
-
-        {/* Header dengan Judul dan Toggle */}
-        <div className="mb-8 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">
-            <span className="text-gray-900 dark:text-white">Lowongan Magang di </span>
-            <span className="text-orange-600 dark:text-orange-400">Indonesia</span>
-          </h1>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setViewMode("grid")}
-              className={`p-2 rounded-lg border transition-all ${viewMode === "grid" ? "bg-orange-50 border-orange-200 text-orange-600 dark:bg-orange-900/20 dark:border-orange-700" : "bg-white border-gray-200 text-gray-400 dark:bg-gray-800 dark:border-gray-700"}`}
-            >
-              <Grid2X2 size={18} />
-            </button>
-            <button
-              onClick={() => setViewMode("list")}
-              className={`p-2 rounded-lg border transition-all ${viewMode === "list" ? "bg-orange-50 border-orange-200 text-orange-600 dark:bg-orange-900/20 dark:border-orange-700" : "bg-white border-gray-200 text-gray-400 dark:bg-gray-800 dark:border-gray-700"}`}
-            >
-              <List size={18} />
-            </button>
-
-          </div>
-        </div>
-
-        {/* Main Layout: Sidebar + Content */}
-        <div className="flex flex-col lg:flex-row gap-8">
-          <div className="lg:w-1/4">
-            <SidebarFilter
-              filters={filterConfigs}
-              onFilterChange={handleFilterChange}
-              onReset={handleResetFilter}
+  const pageContent = (
+    <main className={`flex-1 ${isDashboardView ? "overflow-y-auto" : ""}`}>
+      <div className="min-h-full bg-white dark:bg-gray-950 transition-colors">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Search Filter */}
+          <div className="mb-8">
+            <JobSearchFilter
+              onSearchChange={setSearchQuery}
+              onLocationChange={(value) => {
+                setLocationQuery(value);
+                handleFilterChange("Kota", value);
+              }}
             />
           </div>
 
-          <div className="lg:w-3/4">
-            {/* Jobs Grid or List View */}
-            {isLoading ? (
-              <div className={viewMode === "grid" ? "grid grid-cols-1 lg:grid-cols-2 gap-4" : "flex flex-col gap-4"}>
-                {Array.from({ length: viewMode === "grid" ? 4 : 3 }).map((_, i) => (
-                  viewMode === "grid" ? (
-                    <JobCard
-                      key={i}
-                      id={0}
-                      title=""
-                      company=""
-                      location=""
-                      applicants=""
-                      tags={[]}
-                      postedAt=""
-                      isLoading={true}
-                    />
-                  ) : (
-                    <JobCardList
-                      key={i}
-                      id={0}
-                      title=""
-                      company=""
-                      location=""
-                      applicants=""
-                      tags={[]}
-                      postedAt=""
-                      isLoading={true}
-                    />
-                  )
-                ))}
-              </div>
-            ) : viewMode === "grid" ? (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {filteredJobs.map((job) => (
-                  <JobCard key={job.id} {...job} isInDashboard={isInDashboard} />
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col gap-4">
-                {filteredJobs.map((job) => (
-                  <JobCardList key={job.id} {...job} isInDashboard={isInDashboard} />
-                ))}
-              </div>
-            )}
+          {/* Header dengan Judul dan Toggle */}
+          <div className="mb-8 flex justify-between items-center">
+            <h1 className="text-2xl font-bold">
+              <span className="text-gray-900 dark:text-white">Lowongan Magang di </span>
+              <span className="text-orange-600 dark:text-orange-400">Indonesia</span>
+            </h1>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`p-2 rounded-lg border transition-all ${viewMode === "grid" ? "bg-orange-50 border-orange-200 text-orange-600 dark:bg-orange-900/20 dark:border-orange-700" : "bg-white border-gray-200 text-gray-400 dark:bg-gray-800 dark:border-gray-700"}`}
+              >
+                <Grid2X2 size={18} />
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={`p-2 rounded-lg border transition-all ${viewMode === "list" ? "bg-orange-50 border-orange-200 text-orange-600 dark:bg-orange-900/20 dark:border-orange-700" : "bg-white border-gray-200 text-gray-400 dark:bg-gray-800 dark:border-gray-700"}`}
+              >
+                <List size={18} />
+              </button>
+            </div>
+          </div>
 
-            {/* Empty State */}
-            {!isLoading && filteredJobs.length === 0 && (
-              <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="w-20 h-20 bg-gray-50 dark:bg-gray-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Briefcase className="text-gray-300 dark:text-gray-600" size={40} />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Tidak ada lowongan</h3>
-                <p className="text-gray-500 dark:text-gray-400">Coba ubah kata kunci atau filter pencarian Anda</p>
+          {/* Main Layout: Sidebar + Content */}
+          <div className="flex flex-col lg:flex-row gap-8">
+            <div className="lg:w-1/4">
+              <SidebarFilter
+                filters={filterConfigs}
+                onFilterChange={handleFilterChange}
+                onReset={handleResetFilter}
+                mobileOpen={mobileOpen}
+                onMobileClose={closeMobile}
+              />
+            </div>
+
+            <div className="lg:w-3/4">
+              {/* Mobile trigger button — only on small screens */}
+              <div className="lg:hidden mb-4">
+                <button
+                  onClick={openMobile}
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 font-semibold text-sm hover:border-orange-300 hover:text-orange-500 transition-all"
+                >
+                  <Filter size={16} />
+                  Filter Lowongan
+                </button>
               </div>
-            )}
+
+              {/* Jobs Grid or List View */}
+              {isLoading ? (
+                <div className="w-full h-full min-h-[400px] flex flex-col items-center justify-start bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 pt-12 pb-24">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-orange-500/20 blur-xl rounded-full" />
+                      <Loader2 className="w-10 h-10 text-orange-500 animate-spin relative z-10" />
+                    </div>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400 animate-pulse">
+                      Memuat info loker...
+                    </p>
+                  </div>
+                </div>
+              ) : viewMode === "grid" ? (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {filteredJobs.map((job) => (
+                    <JobCard key={job.id} {...job} isInDashboard={isInDashboard} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {filteredJobs.map((job) => (
+                    <JobCardList key={job.id} {...job} isInDashboard={isInDashboard} />
+                  ))}
+                </div>
+              )}
+
+              {/* Empty State */}
+              {!isLoading && filteredJobs.length === 0 && (
+                <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+                  <div className="w-20 h-20 bg-gray-50 dark:bg-gray-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Briefcase className="text-gray-300 dark:text-gray-600" size={40} />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Tidak ada lowongan</h3>
+                  <p className="text-gray-500 dark:text-gray-400">Coba ubah kata kunci atau filter pencarian Anda</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
+    </main>
+  );
+
+  return (
+    <div className={isDashboardView ? "" : "bg-white dark:bg-gray-900"}>
+      {pageContent}
     </div>
   );
 }
