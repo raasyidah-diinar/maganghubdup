@@ -13,7 +13,9 @@ import {
     MapPin,
     Building2,
     ChevronDown,
-    Check
+    Check,
+    Target,
+    Info
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -42,8 +44,14 @@ export default function PostJobPage() {
     const EDUCATIONS = ["SMA/SMK", "Diploma (D3)", "Sarjana (S1)"];
 
     useEffect(() => {
+        const scrollContainer = document.getElementById("main-scroll-container");
+
         const handleScroll = () => {
-            setIsHeaderSticky(window.scrollY > 20);
+            if (scrollContainer) {
+                setIsHeaderSticky(scrollContainer.scrollTop > 20);
+            } else {
+                setIsHeaderSticky(window.scrollY > 20);
+            }
         };
         const handleClickOutside = (event: MouseEvent) => {
             if (categoryRef.current && !categoryRef.current.contains(event.target as Node)) {
@@ -53,10 +61,20 @@ export default function PostJobPage() {
                 setIsEducationOpen(false);
             }
         };
-        window.addEventListener("scroll", handleScroll);
+
+        if (scrollContainer) {
+            scrollContainer.addEventListener("scroll", handleScroll);
+        } else {
+            window.addEventListener("scroll", handleScroll);
+        }
+
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
-            window.removeEventListener("scroll", handleScroll);
+            if (scrollContainer) {
+                scrollContainer.removeEventListener("scroll", handleScroll);
+            } else {
+                window.removeEventListener("scroll", handleScroll);
+            }
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
@@ -84,13 +102,13 @@ export default function PostJobPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 -ml-4 lg:-ml-6 -mt-6 lg:-mt-8 px-6 pb-20">
+        <div className="min-h-screen bg-[#F8F9FA] dark:bg-gray-950 px-6 pb-20">
             {/* Sticky Header */}
-            <div className={`sticky top-0 z-50 transition-all duration-300 pt-3 pb-5 px-6 -mx-6 mb-8 bg-white dark:bg-gray-900 ${isHeaderSticky
+            <div className={`sticky top-0 z-50 transition-all duration-300 h-16 flex items-center px-6 -mx-6 mb-8 bg-white dark:bg-gray-900 ${isHeaderSticky
                 ? "shadow-[0_4px_20px_-5px_rgba(0,0,0,0.05)] border-b border-gray-100 dark:border-gray-800"
                 : "border-b border-transparent"
                 }`}>
-                <div className="max-w-4xl mx-auto flex items-center justify-between">
+                <div className="max-w-4xl mx-auto w-full flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => router.back()}
@@ -117,9 +135,7 @@ export default function PostJobPage() {
                 {/* 1. DETAIL LOWONGAN */}
                 <div className="bg-white dark:bg-gray-900 rounded-[32px] border border-gray-100 dark:border-gray-800 shadow-sm relative z-20">
                     <div className="px-8 py-6 border-b border-gray-50 dark:border-gray-800 flex items-center gap-3">
-                        <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                            <Briefcase size={18} className="text-[#FF7A00]" />
-                        </div>
+                        <Briefcase size={18} className="text-[#FF7A00]" />
                         <h2 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Detail Lowongan</h2>
                     </div>
                     <div className="p-8 space-y-6">
@@ -215,9 +231,7 @@ export default function PostJobPage() {
                 {/* 2. KRITERIA KANDIDAT */}
                 <div className="bg-white dark:bg-gray-900 rounded-[32px] border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
                     <div className="px-8 py-6 border-b border-gray-50 dark:border-gray-800 flex items-center gap-3">
-                        <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                            <Users size={18} className="text-[#FF7A00]" />
-                        </div>
+                        <Target size={18} className="text-[#FF7A00]" />
                         <h2 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Kriteria Kandidat</h2>
                     </div>
                     <div className="p-8 space-y-8">
@@ -351,9 +365,7 @@ export default function PostJobPage() {
                 {/* 3. GAJI & BENEFIT */}
                 <div className="bg-white dark:bg-gray-900 rounded-[32px] border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
                     <div className="px-8 py-6 border-b border-gray-50 dark:border-gray-800 flex items-center gap-3">
-                        <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                            <DollarSign size={18} className="text-[#FF7A00]" />
-                        </div>
+                        <DollarSign size={18} className="text-[#FF7A00]" />
                         <h2 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Gaji & Benefit</h2>
                     </div>
                     <div className="p-8 space-y-8">
@@ -416,9 +428,7 @@ export default function PostJobPage() {
                 {/* 4. DESKRIPSI */}
                 <div className="bg-white dark:bg-gray-900 rounded-[32px] border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
                     <div className="px-8 py-6 border-b border-gray-50 dark:border-gray-800 flex items-center gap-3">
-                        <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                            <FileText size={18} className="text-[#FF7A00]" />
-                        </div>
+                        <Info size={18} className="text-[#FF7A00]" />
                         <h2 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Deskripsi</h2>
                     </div>
                     <div className="p-8">

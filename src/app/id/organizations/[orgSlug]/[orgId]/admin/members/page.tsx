@@ -251,6 +251,7 @@ export default function OrganizationMembersPage() {
             joinedAt,
         };
         setMembers((prev) => [newMember, ...prev]);
+        setSearch("");
     }
 
     const filtered = members.filter((m) => {
@@ -308,6 +309,7 @@ export default function OrganizationMembersPage() {
                         <input
                             type="text"
                             placeholder="Cari berdasarkan nama, email, atau username..."
+                            autoComplete="off"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="w-full pl-9 pr-4 py-2 text-[13px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition"

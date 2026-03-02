@@ -2,21 +2,39 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { X, CheckCircle2, FileText, Calendar, Building2, Briefcase } from "lucide-react";
-import { LogEntry } from "./LogBookTable";
+import { X, CheckCircle2, FileText, Calendar, Building2, Briefcase, Check } from "lucide-react";
+import { AdminLogEntry } from "./AdminLogBookTable";
 
 interface LogBookDetailModalProps {
     isOpen: boolean;
     onClose: () => void;
-    entry: LogEntry | null;
+    entry: AdminLogEntry | null;
+    onVerify?: (id: string) => void;
 }
 
-export default function LogBookDetailModal({ isOpen, onClose, entry }: LogBookDetailModalProps) {
+export default function LogBookDetailModal({ isOpen, onClose, entry, onVerify }: LogBookDetailModalProps) {
     const [mounted, setMounted] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
     useEffect(() => {
         setMounted(true);
     }, []);
+
+    useEffect(() => {
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                onClose();
+            }
+        };
+
+        if (isOpen) {
+            window.addEventListener("keydown", handleEscape);
+        }
+
+        return () => {
+            window.removeEventListener("keydown", handleEscape);
+        };
+    }, [isOpen, onClose]);
 
     if (!isOpen || !entry || !mounted) return null;
 
@@ -67,13 +85,17 @@ export default function LogBookDetailModal({ isOpen, onClose, entry }: LogBookDe
                     <div className="space-y-1.5">
                         <p className="text-[7.5px] font-bold text-gray-400 uppercase tracking-widest">VERIFIKASI</p>
                         <div className="flex gap-4">
-                            <div className="flex items-center gap-2">
-                                <CheckCircle2 size={15} className={entry.industri ? 'text-emerald-500' : 'text-gray-300'} strokeWidth={2.5} />
-                                <span className="text-[8.5px] font-bold text-gray-600 dark:text-gray-400 uppercase">INDUSTRI</span>
+                            <div className="flex items-center gap-2.5">
+                                <div className={`w-3.5 h-3.5 rounded flex items-center justify-center transition-all ${entry.industri || entry.verified ? 'bg-emerald-500 shadow-sm' : 'border-[#E8532F] border-2 bg-white'}`}>
+                                    {(entry.industri || entry.verified) && <Check size={8} className="text-white" strokeWidth={5} />}
+                                </div>
+                                <span className="text-[8.5px] font-black text-gray-700 dark:text-gray-300 uppercase letter tracking-wider">INDUSTRI</span>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <CheckCircle2 size={15} className={entry.pendidikan ? 'text-emerald-500' : 'text-gray-300'} strokeWidth={2.5} />
-                                <span className="text-[8.5px] font-bold text-gray-600 dark:text-gray-400 uppercase">PENDIDIKAN</span>
+                            <div className="flex items-center gap-2.5">
+                                <div className={`w-3.5 h-3.5 rounded flex items-center justify-center transition-all ${entry.pendidikan || entry.verified ? 'bg-emerald-500 shadow-sm' : 'border-[#E8532F] border-2 bg-white'}`}>
+                                    {(entry.pendidikan || entry.verified) && <Check size={8} className="text-white" strokeWidth={5} />}
+                                </div>
+                                <span className="text-[8.5px] font-black text-gray-700 dark:text-gray-300 uppercase letter tracking-wider">PENDIDIKAN</span>
                             </div>
                         </div>
                     </div>
@@ -107,19 +129,34 @@ export default function LogBookDetailModal({ isOpen, onClose, entry }: LogBookDe
                         <p className="text-[7.5px] font-bold text-gray-400 uppercase tracking-widest">LAMPIRAN</p>
                         <div className="flex flex-wrap gap-2">
                             {entry.attachments && entry.attachments.length > 0 ? entry.attachments.map((file, i) => (
-                                <a
-                                    key={i}
-                                    href={file.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-2 px-2.5 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
-                                >
-                                    <FileText size={13} className="text-orange-500" />
-                                    <span className="text-[9.5px] font-bold text-gray-600 dark:text-gray-400 group-hover:text-orange-600">{file.name}</span>
-                                    <div className="text-gray-300">
-                                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                                    </div>
-                                </a>
+                                <div key={i} className="flex flex-col gap-2">
+                                    <button
+                                        onClick={() => setPreviewUrl(previewUrl === file.url ? null : file.url)}
+                                        className={`flex items-center gap-2 px-2.5 py-1.5 border rounded-lg transition-all group ${previewUrl === file.url ? 'border-orange-500 bg-orange-50 dark:bg-orange-950/20' : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'}`}
+                                    >
+                                        <FileText size={13} className="text-orange-500" />
+                                        <span className="text-[9.5px] font-bold text-gray-600 dark:text-gray-400 group-hover:text-orange-600">{file.name}</span>
+                                        <div className="text-gray-300">
+                                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                        </div>
+                                    </button>
+
+                                    {previewUrl === file.url && createPortal(
+                                        <div
+                                            className="fixed inset-0 z-[10000] bg-black flex items-center justify-center animate-in fade-in duration-300"
+                                            onClick={() => setPreviewUrl(null)}
+                                        >
+                                            <div className="relative">
+                                                <img
+                                                    src={entry.memberAvatar || `https://avatar.vercel.sh/${entry.id}`}
+                                                    alt="Preview"
+                                                    className="w-32 h-32 md:w-48 md:h-48 object-cover animate-in zoom-in-95 duration-300"
+                                                />
+                                            </div>
+                                        </div>,
+                                        document.body
+                                    )}
+                                </div>
                             )) : (
                                 <div className="text-[10.5px] text-gray-400">Tidak ada lampiran.</div>
                             )}
@@ -134,12 +171,15 @@ export default function LogBookDetailModal({ isOpen, onClose, entry }: LogBookDe
                             </div>
                             <span className="text-[7.5px] font-bold text-gray-400 uppercase tracking-widest">TGL LAPOR : {entry.tglLaporan}</span>
                         </div>
-                        <button
-                            onClick={onClose}
-                            className="text-[10.5px] font-bold text-gray-500 hover:text-gray-900 transition-colors px-3 py-1.5"
-                        >
-                            Tutup
-                        </button>
+                        {!entry.verified && (
+                            <button
+                                onClick={() => onVerify?.(entry.id)}
+                                className="px-5 py-2.5 bg-[#E8532F] hover:bg-[#d44a29] text-white rounded-lg text-[10px] font-bold transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                            >
+                                <Check size={14} strokeWidth={3} />
+                                Verifikasi
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>

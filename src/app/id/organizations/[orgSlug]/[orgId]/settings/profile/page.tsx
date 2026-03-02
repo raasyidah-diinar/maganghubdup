@@ -20,6 +20,7 @@ import {
     ChevronRight,
     MessageCircle,
     Loader2,
+    ImagePlus,
 } from "lucide-react";
 
 export default function OrganizationProfilePage() {
@@ -47,6 +48,14 @@ export default function OrganizationProfilePage() {
     const [bannerUrl, setBannerUrl] = useState<string | null>(null);
     const [logoUrl, setLogoUrl] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+
+    // Profile Identity States
+    const [orgName, setOrgName] = useState("SMK Telkom 20 Malang");
+    const [orgCategory, setOrgCategory] = useState("Sekolah Menengah Kejuruan");
+    const [orgDescription, setOrgDescription] = useState("Sekolah kejuruan terbaik di bidang IT dan Telekomunikasi.");
+    const [orgWebsite, setOrgWebsite] = useState("https://smktelkom-mlg.sch.id");
+    const [orgAddress, setOrgAddress] = useState("Jl. Danau Ranau, Sawojajar, Malang");
 
     useEffect(() => {
         const timer = setTimeout(() => setIsLoading(false), 1000);
@@ -95,8 +104,14 @@ export default function OrganizationProfilePage() {
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setGalleryImages([...galleryImages, { url: imageUrl, name: file.name }]);
+            setIsUploading(true);
+
+            // Simulate processing time
+            setTimeout(() => {
+                const imageUrl = URL.createObjectURL(file);
+                setGalleryImages([...galleryImages, { url: imageUrl, name: file.name }]);
+                setIsUploading(false);
+            }, 1000);
         }
     };
 
@@ -204,14 +219,24 @@ export default function OrganizationProfilePage() {
                         {/* Info Area */}
                         <div className="w-full mt-2 md:mt-0 flex-1 pt-8">
                             <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                                <div className="space-y-4">
-                                    <h1 className="text-3xl font-bold text-[#001D35] dark:text-white leading-tight">
-                                        SMK Telkom 20 Malang
-                                    </h1>
+                                <div className="space-y-4 w-full">
+                                    <input
+                                        type="text"
+                                        value={orgName}
+                                        onChange={(e) => setOrgName(e.target.value)}
+                                        className="text-3xl font-bold text-[#001D35] dark:text-white leading-tight bg-transparent border-none p-0 focus:ring-0 w-full placeholder:text-gray-300"
+                                        placeholder="Nama Instansi"
+                                    />
                                     <div className="flex flex-wrap items-center gap-6 text-sm font-semibold text-gray-500 dark:text-gray-400">
-                                        <div className="flex items-center gap-2">
-                                            <GraduationCap size={18} className="text-gray-400" />
-                                            <span>Sekolah Menenga...</span>
+                                        <div className="flex items-center gap-2 min-w-[200px]">
+                                            <GraduationCap size={18} className="text-gray-400 shrink-0" />
+                                            <input
+                                                type="text"
+                                                value={orgCategory}
+                                                onChange={(e) => setOrgCategory(e.target.value)}
+                                                className="bg-transparent border-none p-0 focus:ring-0 w-full text-sm font-semibold placeholder:text-gray-300"
+                                                placeholder="Kategori Instansi"
+                                            />
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <Star size={18} className="text-[#FA7A2E] fill-[#FA7A2E]" />
@@ -234,17 +259,25 @@ export default function OrganizationProfilePage() {
 
                     {/* Links Row */}
                     <div className="flex flex-col sm:flex-row gap-8 mt-8">
-                        <div className="flex items-center gap-2.5 group cursor-pointer">
-                            <MapPin size={18} className="text-[#FA7A2E]" />
-                            <span className="text-[14px] font-semibold text-gray-500 hover:text-[#FA7A2E] transition-colors border-b border-dotted border-gray-400 group-hover:border-[#FA7A2E]">
-                                Jl. Danau Ranau, Sawojajar, Malang
-                            </span>
+                        <div className="flex items-center gap-2.5 group cursor-pointer w-full sm:w-auto">
+                            <MapPin size={18} className="text-[#FA7A2E] shrink-0" />
+                            <input
+                                type="text"
+                                value={orgAddress}
+                                onChange={(e) => setOrgAddress(e.target.value)}
+                                className="text-[14px] font-semibold text-gray-500 hover:text-[#FA7A2E] transition-colors border-b border-dotted border-gray-400 group-hover:border-[#FA7A2E] bg-transparent focus:ring-0 focus:border-[#FA7A2E] p-0 w-full"
+                                placeholder="Alamat Utama"
+                            />
                         </div>
-                        <div className="flex items-center gap-2.5 group cursor-pointer">
-                            <Globe size={18} className="text-blue-500" />
-                            <span className="text-[14px] font-semibold text-gray-500 hover:text-blue-600 transition-colors">
-                                https://smktelkom-mlg.sch.id
-                            </span>
+                        <div className="flex items-center gap-2.5 group cursor-pointer w-full sm:w-auto">
+                            <Globe size={18} className="text-blue-500 shrink-0" />
+                            <input
+                                type="text"
+                                value={orgWebsite}
+                                onChange={(e) => setOrgWebsite(e.target.value)}
+                                className="text-[14px] font-semibold text-gray-500 hover:text-blue-600 transition-colors bg-transparent border-none p-0 focus:ring-0 w-full"
+                                placeholder="Website (https://...)"
+                            />
                         </div>
                     </div>
                 </div>
@@ -284,9 +317,13 @@ export default function OrganizationProfilePage() {
                             {/* Deskripsi */}
                             <div className="bg-white dark:bg-gray-800 rounded-[28px] p-8 border border-gray-100 dark:border-gray-700 shadow-sm relative group">
                                 <h2 className="text-[20px] font-bold text-[#001D35] dark:text-white mb-6">Deskripsi</h2>
-                                <p className="text-[15px] text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
-                                    Sekolah kejuruan terbaik di bidang IT dan Telekomunikasi.
-                                </p>
+                                <textarea
+                                    value={orgDescription}
+                                    onChange={(e) => setOrgDescription(e.target.value)}
+                                    rows={3}
+                                    className="w-full text-[15px] text-gray-500 dark:text-gray-400 leading-relaxed font-medium bg-transparent border-none p-0 focus:ring-0 resize-none placeholder:text-gray-300 overflow-hidden text-pretty"
+                                    placeholder="Tulis deskripsi instansi di sini..."
+                                />
                             </div>
 
                             {/* Lokasi Kantor */}
@@ -363,7 +400,7 @@ export default function OrganizationProfilePage() {
                                             onClick={() => document.getElementById("gallery-upload")?.click()}
                                             className="flex items-center gap-1 text-[13px] font-semibold text-[#FA7A2E] hover:underline px-4 py-2 rounded-xl bg-orange-50/30 dark:bg-orange-950/10 transition-colors"
                                         >
-                                            <Upload size={16} />
+                                            <ImagePlus size={16} />
                                             <span>Upload</span>
                                         </button>
                                     </div>
@@ -585,6 +622,20 @@ export default function OrganizationProfilePage() {
                                 priority
                             />
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Image Upload Loading Modal */}
+            {isUploading && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/10 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-white dark:bg-gray-800 rounded-[24px] p-10 shadow-2xl flex flex-col items-center gap-6 animate-in zoom-in-95 duration-300 border border-gray-100 dark:border-gray-700">
+                        <div className="relative">
+                            <Loader2 className="w-12 h-12 text-orange-500 animate-spin" strokeWidth={2.5} />
+                        </div>
+                        <p className="text-[14px] font-bold text-gray-500 dark:text-gray-300 tracking-tight">
+                            Memproses Gambar ke WebP...
+                        </p>
                     </div>
                 </div>
             )}

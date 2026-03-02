@@ -1,85 +1,99 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Archive, Box, RotateCw, MoreVertical, CheckSquare } from "lucide-react";
-import CommunicationSidebar from "@/components/komunikasi/CommunicationSidebar";
+import { Search, Mail, Box, RotateCw, MoreVertical, Plus, Send } from "lucide-react";
 import ComposeFlow from "@/components/komunikasi/ComposeFlow";
-import { useRouter } from "next/navigation";
 
 export default function OutboxPage() {
     const [isComposing, setIsComposing] = useState(false);
+    const [activeFilter, setActiveFilter] = useState("Semua");
     const [searchQuery, setSearchQuery] = useState("");
-    const router = useRouter();
 
-    const handleTabChange = (tabId: string) => {
-        if (tabId === "inbox") {
-            router.push("./inbox");
-        }
-    };
+    const filters = ["Semua", "Belum Dibuka", "Arsip"];
 
     if (isComposing) {
         return (
-            <div className="h-full bg-white dark:bg-gray-900 overflow-y-auto custom-scrollbar">
+            <div className="h-full bg-white dark:bg-gray-900 overflow-y-auto custom-scrollbar -ml-4 lg:-ml-6 -mt-4 lg:-mt-6">
                 <ComposeFlow onBack={() => setIsComposing(false)} />
             </div>
         );
     }
 
     return (
-        <div className="flex h-full -ml-4 lg:-ml-6 -mt-4 lg:-mt-6 bg-[#F8FAFC] dark:bg-gray-900 overflow-hidden">
-            {/* Communication Sidebar Card - Attached to the left */}
-            <div className="w-[300px] bg-white dark:bg-gray-800 p-5 pt-8 border-r border-gray-100 dark:border-gray-700 h-full flex flex-col shrink-0 shadow-sm transition-all">
-                <CommunicationSidebar
-                    activeTab="outbox"
-                    onTabChange={handleTabChange}
-                    onCompose={() => setIsComposing(true)}
-                />
-            </div>
-
-            {/* Main Content Area */}
-            <div className="flex-1 flex flex-col overflow-hidden px-10 py-8 gap-8">
-                {/* Search Row - Fully separate from the card below */}
-                <div className="flex items-center gap-6 shrink-0">
-                    <div className="flex-1 relative group">
-                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#041E49] transition-colors" size={20} />
-                        <input
-                            type="text"
-                            placeholder="Telusuri email terkirim"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-16 pr-8 py-4 bg-[#EEF3F8] dark:bg-gray-800/80 border-none rounded-full text-[15px] focus:outline-none transition-all font-medium placeholder-gray-500 shadow-sm"
-                        />
-                    </div>
-
-                    {/* ME Avatar - Horizontally aligned with search bar */}
-                    <div className="w-11 h-11 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-[13px] ring-4 ring-white shadow-md shrink-0">
-                        ME
-                    </div>
-                </div>
-
-                {/* Content Card Identity */}
-                <div className="flex-1 bg-white dark:bg-gray-800 rounded-[32px] border border-gray-50 dark:border-gray-700 shadow-sm flex flex-col overflow-hidden">
-                    {/* Toolbar */}
-                    <div className="px-8 py-4 border-b border-gray-50 dark:border-gray-700 flex items-center gap-6 bg-white dark:bg-gray-800">
-                        <div className="flex items-center gap-2">
-                            <button className="p-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl text-gray-500 transition-colors">
-                                <div className="w-4 h-4 border-2 border-gray-300 rounded-[3px]"></div>
+        <div className="flex h-full -ml-4 lg:-ml-6 -mt-4 lg:-mt-6 bg-[#F8FAFC] dark:bg-gray-950 overflow-hidden divide-x divide-gray-100 dark:divide-gray-800">
+            {/* Left Column: Message List Section */}
+            <div className="w-[450px] flex flex-col bg-white dark:bg-gray-900 shrink-0 border-r border-gray-100 dark:border-gray-800">
+                {/* Header & Filters */}
+                <div className="p-7 pb-5">
+                    <div className="flex flex-col gap-5 mb-6">
+                        <div className="flex items-center justify-between">
+                            <h1 className="text-[20px] font-bold text-[#001D35] dark:text-white tracking-tight uppercase">SURAT KELUAR</h1>
+                            <button
+                                onClick={() => setIsComposing(true)}
+                                className="w-10 h-10 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-gray-400 hover:text-[#FF7A00] hover:border-orange-100 dark:hover:border-orange-900/30 transition-all shadow-sm active:scale-95"
+                            >
+                                <Plus size={20} />
                             </button>
-                            <button className="p-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl text-gray-500 transition-colors">
-                                <RotateCw size={19} />
-                            </button>
-                            <button className="p-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl text-gray-500 transition-colors">
-                                <MoreVertical size={19} />
-                            </button>
+                        </div>
+
+                        {/* Filter Pill Container */}
+                        <div className="flex bg-[#F1F4F7] dark:bg-gray-800/80 p-1 rounded-xl w-full">
+                            {filters.map((filter) => (
+                                <button
+                                    key={filter}
+                                    onClick={() => setActiveFilter(filter)}
+                                    className={`flex-1 px-4 py-1.5 rounded-lg text-[12px] transition-all duration-300 ${activeFilter === filter
+                                        ? "bg-white dark:bg-gray-700 text-[#001D35] dark:text-white font-semibold shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)]"
+                                        : "text-gray-500 dark:text-gray-400 font-medium hover:text-gray-700 dark:hover:text-gray-200"
+                                        }`}
+                                >
+                                    {filter}
+                                </button>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Empty State */}
-                    <div className="flex-1 flex flex-col items-center justify-center p-10 text-center -mt-10">
-                        <p className="text-[14px] font-medium text-gray-500 dark:text-gray-400 max-w-xs">
-                            Tidak ada email terkirim.
-                        </p>
+                    {/* Search Bar */}
+                    <div className="relative group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-gray-500 transition-colors" size={16} />
+                        <input
+                            type="text"
+                            placeholder="Cari surat terkirim..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 rounded-2xl text-[13px] focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700/50 focus:border-gray-200 dark:focus:border-gray-700 transition-all font-medium placeholder-gray-400 shadow-sm"
+                        />
                     </div>
+                </div>
+
+                {/* Message List Area */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar border-t border-gray-50 dark:border-gray-800">
+                    {/* Empty placeholder removed as per previous design preference */}
+                </div>
+            </div>
+
+            {/* Right Column: Message Preview Section */}
+            <div className="flex-1 bg-[#D1D9E4]/30 dark:bg-gray-900/40 flex flex-col items-center justify-center text-center p-10 relative overflow-hidden">
+                {/* Decorative Overlay */}
+                <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05]"
+                    style={{ backgroundImage: 'radial-gradient(#000 0.5px, transparent 0.5px)', backgroundSize: '20px 20px' }} />
+
+                <div className="absolute top-6 right-8 flex items-center gap-2 opacity-30">
+                    <button className="p-2.5 hover:bg-white/50 dark:hover:bg-gray-800 rounded-xl text-gray-500 transition-colors">
+                        <RotateCw size={18} />
+                    </button>
+                    <button className="p-2.5 hover:bg-white/50 dark:hover:bg-gray-800 rounded-xl text-gray-500 transition-colors">
+                        <MoreVertical size={18} />
+                    </button>
+                </div>
+
+                <div className="flex flex-col items-center max-w-sm relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                    <div className="mb-10">
+                        <Send size={64} className="text-[#001D35]/10 dark:text-white/10" strokeWidth={1} />
+                    </div>
+                    <p className="text-[15px] font-bold text-[#001D35]/30 dark:text-white/30 tracking-tight">
+                        Pilih surat terkirim untuk melihat detail
+                    </p>
                 </div>
             </div>
         </div>

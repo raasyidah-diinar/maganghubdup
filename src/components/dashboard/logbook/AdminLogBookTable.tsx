@@ -8,6 +8,7 @@ export interface AdminLogEntry extends LogEntry {
     memberName: string;
     memberAvatar?: string;
     group: string;
+    verified?: boolean;
 }
 
 interface AdminLogBookTableProps {
@@ -59,7 +60,7 @@ export default function AdminLogBookTable({
                                 <th className="px-4 py-3.5 w-10">
                                     <div
                                         onClick={(e) => { e.stopPropagation(); onToggleSelectAll(); }}
-                                        className={`w-4 h-4 rounded border flex items-center justify-center cursor-pointer transition-colors ${isAllSelected ? 'bg-[#E8532F] border-[#E8532F]' : 'bg-white border-gray-300 hover:border-orange-500'}`}
+                                        className={`w-4 h-4 rounded border flex items-center justify-center cursor-pointer transition-colors ${isAllSelected ? 'bg-[#E8532F] border-[#E8532F]' : 'bg-white border-orange-200 dark:border-orange-900/50 hover:border-[#E8532F]'}`}
                                     >
                                         {isAllSelected && <Check size={10} className="text-white" strokeWidth={4} />}
                                     </div>
@@ -84,12 +85,21 @@ export default function AdminLogBookTable({
                                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                                         <div
                                             onClick={() => onToggleSelect(row.id)}
-                                            className={`w-4 h-4 rounded border flex items-center justify-center cursor-pointer transition-colors ${selectedIds.includes(row.id) ? 'bg-[#E8532F] border-[#E8532F]' : 'bg-white border-gray-300 group-hover:border-orange-500'}`}
+                                            className={`w-4 h-4 rounded flex items-center justify-center cursor-pointer transition-all duration-300 ${selectedIds.includes(row.id)
+                                                ? 'bg-[#E8532F] border-[#E8532F]'
+                                                : row.verified
+                                                    ? 'bg-gray-200 border-transparent dark:bg-gray-700'
+                                                    : 'bg-white border-[#E8532F] border-2 shadow-sm'
+                                                }`}
                                         >
-                                            {selectedIds.includes(row.id) && <Check size={10} className="text-white" strokeWidth={4} />}
+                                            {(selectedIds.includes(row.id) || row.verified) && (
+                                                <Check size={10} className="text-white" strokeWidth={4} />
+                                            )}
                                         </div>
                                     </td>
-                                    <td className="px-4 py-3 text-[11.5px] text-gray-600 dark:text-gray-400 font-medium">{row.tglLaporan}</td>
+                                    <td className="px-4 py-3 text-[11.5px] text-gray-600 dark:text-gray-400 font-medium">
+                                        {row.tglLaporan}
+                                    </td>
                                     <td className="px-4 py-3">
                                         <div className="flex items-center gap-2.5">
                                             <div className="relative w-7 h-7 rounded-full overflow-hidden border border-gray-100">
@@ -123,17 +133,17 @@ export default function AdminLogBookTable({
                                         {row.uraian}
                                     </td>
                                     <td className="px-4 py-3 text-center">
-                                        <div className={`w-4.5 h-4.5 rounded-full flex items-center justify-center mx-auto border ${row.industri
+                                        <div className={`w-4.5 h-4.5 rounded-full flex items-center justify-center mx-auto border transition-all duration-500 ${row.industri && row.verified
                                             ? "bg-white border-emerald-500 text-emerald-500"
-                                            : "bg-white border-gray-100 text-gray-100"
+                                            : "bg-white border-gray-100 text-gray-100 dark:border-gray-800 dark:text-gray-800"
                                             }`}>
                                             <Check size={11} strokeWidth={3} />
                                         </div>
                                     </td>
                                     <td className="px-4 py-3 text-center">
-                                        <div className={`w-4.5 h-4.5 rounded-full flex items-center justify-center mx-auto border ${row.pendidikan
+                                        <div className={`w-4.5 h-4.5 rounded-full flex items-center justify-center mx-auto border transition-all duration-500 ${row.pendidikan && row.verified
                                             ? "bg-white border-emerald-500 text-emerald-500"
-                                            : "bg-white border-gray-100 text-gray-100"
+                                            : "bg-white border-gray-100 text-gray-100 dark:border-gray-800 dark:text-gray-800"
                                             }`}>
                                             <Check size={11} strokeWidth={3} />
                                         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Loader2, Plus, X, ChevronDown } from "lucide-react";
 
@@ -45,6 +45,15 @@ function KategoriBadge({ kategori }: { kategori: string }) {
 
 function DetailModal({ entry, onClose }: { entry: GradingEntry; onClose: () => void }) {
     const grade = getGrade(entry.nilai);
+
+    useEffect(() => {
+        const handleEsc = (e: KeyboardEvent) => {
+            if (e.key === "Escape") onClose();
+        };
+        window.addEventListener("keydown", handleEsc);
+        return () => window.removeEventListener("keydown", handleEsc);
+    }, [onClose]);
+
     return createPortal(
         <div className="fixed inset-0 z-[9999] flex justify-center items-start overflow-y-auto py-10 px-4">
             {/* Backdrop */}
@@ -83,6 +92,18 @@ function DetailModal({ entry, onClose }: { entry: GradingEntry; onClose: () => v
                         </div>
                         <div className="space-y-1.5">
                             <label className="flex items-center gap-1.5 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                <Plus size={10} className="text-[#FF7A00]" /> TANGGAL
+                            </label>
+                            <div className="flex items-center justify-between px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 rounded-xl text-[13px] font-medium text-gray-700 dark:text-gray-200">
+                                <span>{entry.tglPenilaian}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Row 2: Kategori + Nilai */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                            <label className="flex items-center gap-1.5 text-[10px] font-black text-gray-400 uppercase tracking-widest">
                                 <Plus size={10} className="text-[#FF7A00]" /> KATEGORI
                             </label>
                             <div className="flex items-center justify-between px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 rounded-xl text-[13px] font-medium text-gray-700 dark:text-gray-200">
@@ -90,10 +111,6 @@ function DetailModal({ entry, onClose }: { entry: GradingEntry; onClose: () => v
                                 <ChevronDown size={13} className="text-gray-400" />
                             </div>
                         </div>
-                    </div>
-
-                    {/* Row 2: Nilai + Grade */}
-                    <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1.5">
                             <label className="flex items-center gap-1.5 text-[10px] font-black text-gray-400 uppercase tracking-widest">
                                 <Plus size={10} className="text-[#FF7A00]" /> NILAI ANGKA (0-100)
@@ -102,13 +119,15 @@ function DetailModal({ entry, onClose }: { entry: GradingEntry; onClose: () => v
                                 {entry.nilai}
                             </div>
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">
-                                GRADE
-                            </label>
-                            <div className="px-3.5 py-2.5 bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800/40 rounded-xl text-[22px] font-black text-[#FF7A00] flex items-center justify-center">
-                                {grade}
-                            </div>
+                    </div>
+
+                    {/* Row 3: Grade */}
+                    <div className="space-y-1.5 w-1/2 mx-auto">
+                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">
+                            GRADE
+                        </label>
+                        <div className="px-3.5 py-2.5 bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800/40 rounded-xl text-[22px] font-black text-[#FF7A00] flex items-center justify-center">
+                            {grade}
                         </div>
                     </div>
 

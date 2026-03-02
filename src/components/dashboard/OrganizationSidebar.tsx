@@ -206,8 +206,8 @@ export default function OrganizationSidebar({
                                             <p className="text-[13px] font-semibold text-gray-900 dark:text-white truncate uppercase tracking-tight">
                                                 {displayName}
                                             </p>
-                                            <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate font-medium uppercase tracking-wider">
-                                                Dashboard Institusi
+                                            <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate font-medium tracking-wider">
+                                                Pendidikan, Industry
                                             </p>
                                         </div>
                                         <ChevronsUpDown size={14} className="text-gray-400 flex-shrink-0 group-data-[collapsible=icon]:hidden" />

@@ -92,11 +92,21 @@ export default function GradingPage() {
     const [formMember, setFormMember] = useState("");
     const [formCategory, setFormCategory] = useState("Kinerja");
     const [formScore, setFormScore] = useState("");
+    const [formDate, setFormDate] = useState("");
     const [formDescription, setFormDescription] = useState("");
+    const [isFormCalendarOpen, setIsFormCalendarOpen] = useState(false);
     const [formRecommendation, setFormRecommendation] = useState("");
     const [isMemberDropdownOpen, setIsMemberDropdownOpen] = useState(false);
     const [isModalCategoryDropdownOpen, setIsModalCategoryDropdownOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        const handleEsc = (e: KeyboardEvent) => {
+            if (e.key === "Escape") setIsModalOpen(false);
+        };
+        window.addEventListener("keydown", handleEsc);
+        return () => window.removeEventListener("keydown", handleEsc);
+    }, []);
 
     // ---- Helper: parse "26 Feb 2026" -> Date ----
     const parseDate = (str: string) => {
@@ -104,7 +114,9 @@ export default function GradingPage() {
             Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
             Jul: 6, Aug: 7, Sep: 8, Okt: 9, Nov: 10, Des: 11,
         };
-        const [d, m, y] = str.split(' ');
+        const parts = str.split(' ');
+        if (parts.length < 3) return new Date();
+        const [d, m, y] = parts;
         return new Date(parseInt(y), months[m] ?? 0, parseInt(d));
     };
 
@@ -202,8 +214,11 @@ export default function GradingPage() {
     };
 
     const handleOpenModal = () => {
+        const now = new Date();
+        const dateStr = `${now.getDate()} ${now.toLocaleString('id-ID', { month: 'short' })} ${now.getFullYear()}`;
         setFormMember("");
         setFormCategory("Kinerja");
+        setFormDate(dateStr);
         setFormScore("");
         setFormDescription("");
         setFormRecommendation("");
@@ -219,18 +234,16 @@ export default function GradingPage() {
     };
 
     const handleSave = () => {
-        if (!formMember || !formScore || !formDescription) {
-            window.alert("Mohon lengkapi data yang wajib diisi (Anggota, Nilai, Deskripsi).");
+        if (!formMember || !formScore || !formDescription || !formDate) {
+            window.alert("Mohon lengkapi data yang wajib diisi (Anggota, Nilai, Deskripsi, Tanggal).");
             return;
         }
         setIsFormSubmitting(true);
         setTimeout(() => {
             const member = MEMBER_OPTIONS.find(m => m.name === formMember);
-            const now = new Date();
-            const dateStr = `${now.getDate()} ${now.toLocaleString('id-ID', { month: 'short' })} ${now.getFullYear()}`;
             const newEntry: GradingEntry = {
                 id: Math.random().toString(36).substr(2, 9),
-                tglPenilaian: dateStr,
+                tglPenilaian: formDate,
                 memberName: formMember,
                 memberAvatar: member?.avatar || "",
                 kategori: formCategory,
@@ -384,11 +397,9 @@ export default function GradingPage() {
                                     <div className="relative">
                                         <button
                                             onClick={() => setIsMemberDropdownOpen(v => !v)}
-                                            className="w-full flex items-center justify-between px-3.5 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-[13px] text-left hover:border-gray-300 transition-all"
+                                            className="w-full flex items-center justify-between px-3.5 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-[13px] text-left hover:border-gray-300 transition-all font-medium text-gray-900 dark:text-white"
                                         >
-                                            <span className={formMember ? "text-gray-900 dark:text-white font-medium" : "text-gray-400"}>
-                                                {formMember || "Pilih Anggota"}
-                                            </span>
+                                            <span>{formMember || "Pilih Anggota"}</span>
                                             <ChevronDown size={14} className={`text-gray-400 transition-transform flex-shrink-0 ${isMemberDropdownOpen ? "rotate-180" : ""}`} />
                                         </button>
                                         {isMemberDropdownOpen && (
@@ -416,9 +427,9 @@ export default function GradingPage() {
                                     <div className="relative">
                                         <button
                                             onClick={() => setIsModalCategoryDropdownOpen(v => !v)}
-                                            className="w-full flex items-center justify-between px-3.5 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-[13px] text-left hover:border-gray-300 transition-all"
+                                            className="w-full flex items-center justify-between px-3.5 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-[13px] text-left hover:border-gray-300 transition-all font-medium text-gray-900 dark:text-white"
                                         >
-                                            <span className="text-gray-900 dark:text-white font-medium">{formCategory}</span>
+                                            <span>{formCategory}</span>
                                             <ChevronDown size={14} className={`text-gray-400 transition-transform flex-shrink-0 ${isModalCategoryDropdownOpen ? "rotate-180" : ""}`} />
                                         </button>
                                         {isModalCategoryDropdownOpen && (
@@ -437,10 +448,36 @@ export default function GradingPage() {
                                         )}
                                     </div>
                                 </div>
+
                             </div>
 
-                            {/* Row 2: Nilai Angka + Grade */}
+                            {/* Row 2: Tanggal + Score */}
                             <div className="grid grid-cols-2 gap-4">
+                                {/* Tanggal */}
+                                <div className="space-y-1.5">
+                                    <label className="flex items-center gap-1.5 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                        <Plus size={11} className="text-[#FF7A00]" /> TANGGAL
+                                    </label>
+                                    <div className="relative">
+                                        <button
+                                            onClick={() => setIsFormCalendarOpen(v => !v)}
+                                            className="w-full flex items-center justify-between px-3.5 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-[13px] text-left hover:border-gray-300 transition-all font-medium text-gray-900 dark:text-white"
+                                        >
+                                            <span>{formDate}</span>
+                                            <ChevronDown size={14} className={`text-gray-400 transition-transform flex-shrink-0 ${isFormCalendarOpen ? "rotate-180" : ""}`} />
+                                        </button>
+                                        {isFormCalendarOpen && (
+                                            <>
+                                                <div className="fixed inset-0 z-10" onClick={() => setIsFormCalendarOpen(false)} />
+                                                <div className="absolute top-full left-0 mt-1.5 z-20" onClick={(e) => e.stopPropagation()}>
+                                                    <CalendarPicker selectedDate={formDate} onSelect={(d) => { setFormDate(d); setIsFormCalendarOpen(false); }} />
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Nilai Angka */}
                                 <div className="space-y-1.5">
                                     <label className="flex items-center gap-1.5 text-[10px] font-black text-gray-400 uppercase tracking-widest">
                                         <Plus size={11} className="text-[#FF7A00]" /> NILAI ANGKA (0-100)
@@ -454,13 +491,15 @@ export default function GradingPage() {
                                         className="w-full px-3.5 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-[13px] font-medium text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 transition-all"
                                     />
                                 </div>
-                                <div className="space-y-1.5">
-                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">
-                                        GRADE
-                                    </label>
-                                    <div className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 rounded-xl text-[20px] font-black text-[#FF7A00] flex items-center justify-center min-h-[44px]">
-                                        {currentGrade}
-                                    </div>
+                            </div>
+
+                            {/* Row 3: Grade */}
+                            <div className="space-y-1.5 w-1/2 mx-auto">
+                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">
+                                    GRADE
+                                </label>
+                                <div className="w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 rounded-xl text-[20px] font-black text-[#FF7A00] flex items-center justify-center min-h-[44px]">
+                                    {currentGrade}
                                 </div>
                             </div>
 

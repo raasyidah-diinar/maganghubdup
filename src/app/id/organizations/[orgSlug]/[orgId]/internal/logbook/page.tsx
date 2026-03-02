@@ -87,14 +87,14 @@ const MOCK_ADMIN_DATA: AdminLogEntry[] = Array.from({ length: 19 }, (_, i) => ({
     uraian: i % 2 === 0
         ? "Eksport project Unity ke format WebGL dan melakukan testing performa di Chrome..."
         : "Menambahkan index pada kolom email dan created_at untuk mempercepat filtering...",
-    industri: true,
-    pendidikan: true,
-    industryName: INDUSTRY_OPTIONS[(i % (INDUSTRY_OPTIONS.length - 1)) + 1],
+    industri: i % 4 === 0,
+    pendidikan: i % 4 === 0,
+    verified: i % 4 === 0,
     group: GROUP_OPTIONS[(i % (GROUP_OPTIONS.length - 1)) + 1],
     memberName: "Raasyidah Diinar",
     memberAvatar: "/hyein.png",
     tasks: i % 2 === 0 ? ["Build WebGL", "Testing on Browser"] : ["Database Optimization", "Index Creation"],
-    attachments: i % 3 === 0 ? [{ name: `File ${i + 1}`, url: "#" }] : []
+    attachments: [{ name: `Lampiran ${(i % 3) + 1}.png`, url: "#" }]
 }));
 
 

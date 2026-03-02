@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Search, Calendar, ChevronLeft, ChevronRight, ChevronDown, Building2, Check, Loader2 } from "lucide-react";
-import AdminLogBookTable, { AdminLogEntry } from "@/components/dashboard/logbook/AdminLogBookTable";
+import AdminLogBookTable from "@/components/dashboard/logbook/AdminLogBookTable";
+import { LogEntry } from "@/components/dashboard/logbook/LogBookTable";
 import LogBookDetailModal from "@/components/dashboard/logbook/LogBookDetailModal";
 
 const INDUSTRY_OPTIONS = [
@@ -79,6 +80,13 @@ function CalendarPicker({ onSelect, selectedDate }: { onSelect: (date: string) =
     );
 }
 
+export interface AdminLogEntry extends LogEntry {
+    memberName: string;
+    memberAvatar?: string;
+    group: string;
+    verified?: boolean;
+}
+
 const MOCK_ADMIN_DATA: AdminLogEntry[] = Array.from({ length: 19 }, (_, i) => ({
     id: (i + 1).toString(),
     tglLaporan: `${(i % 28) + 1} Feb 2026`,
@@ -87,18 +95,20 @@ const MOCK_ADMIN_DATA: AdminLogEntry[] = Array.from({ length: 19 }, (_, i) => ({
     uraian: i % 2 === 0
         ? "Eksport project Unity ke format WebGL dan melakukan testing performa di Chrome..."
         : "Menambahkan index pada kolom email dan created_at untuk mempercepat filtering...",
-    industri: true,
-    pendidikan: true,
+    industri: i % 4 === 0,
+    pendidikan: i % 4 === 0,
+    verified: i % 4 === 0,
     industryName: INDUSTRY_OPTIONS[(i % (INDUSTRY_OPTIONS.length - 1)) + 1],
     group: GROUP_OPTIONS[(i % (GROUP_OPTIONS.length - 1)) + 1],
     memberName: "Raasyidah Diinar",
     memberAvatar: "/hyein.png",
     tasks: i % 2 === 0 ? ["Build WebGL", "Testing on Browser"] : ["Database Optimization", "Index Creation"],
-    attachments: i % 3 === 0 ? [{ name: `File ${i + 1}`, url: "#" }] : []
+    attachments: [{ name: `Lampiran ${(i % 3) + 1}.png`, url: "#" }]
 }));
 
 
 export default function AdminLogBookPage() {
+    const [logData, setLogData] = useState<AdminLogEntry[]>(MOCK_ADMIN_DATA);
     const [selectedEntry, setSelectedEntry] = useState<AdminLogEntry | null>(null);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -120,7 +130,7 @@ export default function AdminLogBookPage() {
 
     // --- Filtering Logic ---
     const filteredData = useMemo(() => {
-        return MOCK_ADMIN_DATA.filter(entry => {
+        return logData.filter(entry => {
             // Member Search
             if (memberSearch && !entry.memberName.toLowerCase().includes(memberSearch.toLowerCase())) return false;
 
@@ -167,16 +177,50 @@ export default function AdminLogBookPage() {
         setIsDetailModalOpen(true);
     };
 
+    const handleVerifyBatch = () => {
+        if (selectedIds.length === 0) return;
+        setIsLoading(true);
+        setTimeout(() => {
+            setLogData(prev => prev.map(entry =>
+                selectedIds.includes(entry.id)
+                    ? { ...entry, verified: true, industri: true, pendidikan: true }
+                    : entry
+            ));
+            setSelectedIds([]);
+            setIsLoading(false);
+        }, 800);
+    };
+
+    const handleVerifySingle = (id: string) => {
+        setIsLoading(true);
+        setTimeout(() => {
+            setLogData(prev => prev.map(entry =>
+                entry.id === id
+                    ? { ...entry, verified: true, industri: true, pendidikan: true }
+                    : entry
+            ));
+            if (selectedEntry?.id === id) {
+                setSelectedEntry(prev => prev ? { ...prev, verified: true, industri: true, pendidikan: true } : null);
+            }
+            setIsLoading(false);
+        }, 800);
+    };
+
     const toggleSelect = (id: string) => {
+        setIsLoading(true);
         setSelectedIds(prev =>
             prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
         );
+        setTimeout(() => setIsLoading(false), 800);
     };
 
     const toggleSelectAll = () => {
+        setIsLoading(true);
+        const allIds = filteredData.map(d => d.id);
         setSelectedIds(prev =>
-            prev.length === filteredData.length ? [] : filteredData.map(d => d.id)
+            prev.length === allIds.length ? [] : allIds
         );
+        setTimeout(() => setIsLoading(false), 800);
     };
 
     const handlePageChange = (page: number) => {
@@ -251,7 +295,18 @@ export default function AdminLogBookPage() {
         <div className="space-y-6 pb-10 animate-slide-up">
             {/* Header with Title & Filters */}
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">LogBook</h1>
+                <div className="flex items-center gap-4">
+                    <h1 className="text-xl font-bold text-gray-900 dark:text-white">LogBook</h1>
+                    {selectedIds.length > 0 && (
+                        <button
+                            onClick={handleVerifyBatch}
+                            className="flex items-center gap-2 px-4 py-2 bg-[#E8532F] hover:bg-[#d04a29] text-white text-[11px] font-bold rounded-lg transition-all shadow-lg shadow-orange-500/20 active:scale-95 animate-in fade-in slide-in-from-left-4 duration-300"
+                        >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            <span>Verifikasi ({selectedIds.length})</span>
+                        </button>
+                    )}
+                </div>
 
                 <div className="flex flex-wrap items-center gap-2">
                     {/* Search Member */}
@@ -482,6 +537,7 @@ export default function AdminLogBookPage() {
                     isOpen={isDetailModalOpen}
                     onClose={() => setIsDetailModalOpen(false)}
                     entry={selectedEntry}
+                    onVerify={() => handleVerifySingle(selectedEntry.id)}
                 />
             )}
         </div>

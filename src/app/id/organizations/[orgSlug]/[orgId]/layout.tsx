@@ -25,7 +25,7 @@ export default function OrganizationLayout({
                 orgId={orgId}
             />
             <SidebarInset>
-                <div className={`flex flex-col h-screen bg-[#f8fafc] dark:bg-gray-900 ${isPostJobPage ? "overflow-y-auto" : ""}`}>
+                <div id="main-scroll-container" className={`flex flex-col h-screen bg-[#f8fafc] dark:bg-gray-900 ${isPostJobPage ? "overflow-y-auto" : ""}`}>
                     {/* Header - sticky conditional */}
                     {!isProjectBoard && (
                         <div className={`${isPostJobPage ? "relative" : "sticky top-0"} z-50 flex-shrink-0`}>
@@ -34,7 +34,7 @@ export default function OrganizationLayout({
                     )}
 
                     {/* Content Area - scrollable */}
-                    <main className={`flex-1 ${isProjectBoard ? "p-0 overflow-hidden" : "p-4 lg:p-6 overflow-y-auto"} ${isPostJobPage ? "" : ""}`}>
+                    <main className={`flex-1 ${isProjectBoard ? "p-0 overflow-hidden" : isPostJobPage ? "p-0" : "p-4 lg:p-6 overflow-y-auto"}`}>
                         <div className={`h-full ${isProjectBoard ? "max-w-full" : "max-w-[1600px] mx-auto"}`}>
                             {children}
                         </div>
