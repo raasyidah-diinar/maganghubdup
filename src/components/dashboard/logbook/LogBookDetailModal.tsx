@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X, CheckCircle2, FileText, Calendar, Building2, Briefcase, Check } from "lucide-react";
+import { LogEntry } from "./LogBookTable";
 import { AdminLogEntry } from "./AdminLogBookTable";
 
 interface LogBookDetailModalProps {
     isOpen: boolean;
     onClose: () => void;
-    entry: AdminLogEntry | null;
+    entry: (LogEntry & Partial<AdminLogEntry>) | null;
     onVerify?: (id: string) => void;
 }
 
