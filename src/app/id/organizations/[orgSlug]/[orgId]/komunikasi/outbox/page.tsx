@@ -1,15 +1,58 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Mail, Box, RotateCw, MoreVertical, Plus, Send } from "lucide-react";
+import { Search, Mail, Box, RotateCw, MoreVertical, Plus, Send, Trash2, Star, User, Reply, Forward, Trash, Archive } from "lucide-react";
 import ComposeFlow from "@/components/komunikasi/ComposeFlow";
 
 export default function OutboxPage() {
     const [isComposing, setIsComposing] = useState(false);
     const [activeFilter, setActiveFilter] = useState("Semua");
     const [searchQuery, setSearchQuery] = useState("");
+    const [selectedId, setSelectedId] = useState<number | null>(null);
 
     const filters = ["Semua", "Belum Dibuka", "Arsip"];
+
+    const messages = [
+        {
+            id: 1,
+            recipient: "Glints",
+            email: "partnership@glints.com",
+            date: "23 Feb 2026",
+            subject: "Konfirmasi Kehadiran Diskusi Partnership 2026",
+            content: `Halo Tim Glints,
+
+Kami dengan senang hati mengonfirmasi kehadiran kami dalam diskusi kolaborasi partnership yang dijadwalkan pada hari Jumat mendatang. Kami sangat antusias untuk membahas potensi kerja sama lebih lanjut.
+
+Terima kasih,
+Tim MagangHub`,
+        },
+        {
+            id: 2,
+            recipient: "Glints",
+            email: "support@glints.com",
+            date: "24 Feb 2026",
+            subject: "Permohonan Penambahan Kapasitas Penyimpanan Cloud",
+            content: `Kepada Tim Support,
+
+Sehubungan dengan meningkatnya jumlah data pengguna di platform kami, kami ingin mengajukan penambahan kapasitas penyimpanan cloud sebesar 500GB for server utama kami.
+
+Mohon informasi terkait rincian biaya and prosedurnya.`,
+        },
+        {
+            id: 3,
+            recipient: "Glints",
+            email: "hr@glints.com",
+            date: "22 Feb 2026",
+            subject: "Persetujuan Penerimaan Program Magang Mahasiswa",
+            content: `Selamat siang,
+
+Berdasarkan hasil seleksi administratif, kami telah menyetujui daftar mahasiswa terlampir for mengikuti program magang di PT. Glints for periode tahun 2026.
+
+Silakan hubungi kami jika ada dokumen tambahan yang diperlukan.`,
+        },
+    ];
+
+    const selectedMessage = messages.find(m => m.id === selectedId);
 
     if (isComposing) {
         return (
@@ -27,7 +70,7 @@ export default function OutboxPage() {
                 <div className="p-7 pb-5">
                     <div className="flex flex-col gap-5 mb-6">
                         <div className="flex items-center justify-between">
-                            <h1 className="text-[20px] font-bold text-[#001D35] dark:text-white tracking-tight uppercase">SURAT KELUAR</h1>
+                            <h1 className="text-[20px] font-bold text-[#001D35] dark:text-white tracking-tight">Surat Keluar</h1>
                             <button
                                 onClick={() => setIsComposing(true)}
                                 className="w-10 h-10 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl text-gray-400 hover:text-[#FF7A00] hover:border-orange-100 dark:hover:border-orange-900/30 transition-all shadow-sm active:scale-95"
@@ -61,40 +104,108 @@ export default function OutboxPage() {
                             placeholder="Cari surat terkirim..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 rounded-2xl text-[13px] focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700/50 focus:border-gray-200 dark:focus:border-gray-700 transition-all font-medium placeholder-gray-400 shadow-sm"
+                            className="w-full pl-11 pr-4 py-3 bg-[#F1F4F7] dark:bg-gray-800/50 border-none rounded-2xl text-[13px] focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700/50 transition-all font-medium placeholder-gray-400"
                         />
                     </div>
                 </div>
 
                 {/* Message List Area */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar border-t border-gray-50 dark:border-gray-800">
-                    {/* Empty placeholder removed as per previous design preference */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar border-t border-gray-100 dark:border-gray-800">
+                    {messages.map((msg) => (
+                        <div
+                            key={msg.id}
+                            onClick={() => setSelectedId(msg.id)}
+                            className={`px-7 py-5 cursor-pointer transition-all border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50/50 dark:hover:bg-gray-800/30 relative ${selectedId === msg.id ? "bg-[#F8FAFC] dark:bg-gray-800/50" : ""
+                                }`}
+                        >
+                            <div className="flex justify-between items-start mb-1">
+                                <span className={`text-[13px] font-bold ${selectedId === msg.id ? "text-slate-900 dark:text-white" : "text-gray-600 dark:text-gray-300"}`}>
+                                    {msg.recipient}
+                                </span>
+                                <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium">
+                                    {msg.date}
+                                </span>
+                            </div>
+                            <p className={`text-[12px] line-clamp-1 leading-relaxed ${selectedId === msg.id ? "text-slate-600 dark:text-gray-300 font-semibold" : "text-gray-500 dark:text-gray-400"}`}>
+                                {msg.subject}
+                            </p>
+                        </div>
+                    ))}
                 </div>
             </div>
 
             {/* Right Column: Message Preview Section */}
-            <div className="flex-1 bg-[#D1D9E4]/30 dark:bg-gray-900/40 flex flex-col items-center justify-center text-center p-10 relative overflow-hidden">
-                {/* Decorative Overlay */}
-                <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05]"
-                    style={{ backgroundImage: 'radial-gradient(#000 0.5px, transparent 0.5px)', backgroundSize: '20px 20px' }} />
+            <div className="flex-1 bg-white dark:bg-gray-900 flex flex-col relative overflow-hidden">
+                {selectedMessage ? (
+                    <>
+                        {/* Detail Header Toolbar */}
+                        <div className="px-8 py-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                            <div className="flex items-center gap-6">
+                                <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-500 transition-colors">
+                                    <Archive size={18} />
+                                </button>
+                                <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-500 transition-colors">
+                                    <Trash2 size={18} />
+                                </button>
+                                <div className="w-px h-6 bg-gray-100 dark:bg-gray-800" />
+                                <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-500 transition-colors">
+                                    <Star size={18} />
+                                </button>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-500 transition-colors">
+                                    <MoreVertical size={18} />
+                                </button>
+                            </div>
+                        </div>
 
-                <div className="absolute top-6 right-8 flex items-center gap-2 opacity-30">
-                    <button className="p-2.5 hover:bg-white/50 dark:hover:bg-gray-800 rounded-xl text-gray-500 transition-colors">
-                        <RotateCw size={18} />
-                    </button>
-                    <button className="p-2.5 hover:bg-white/50 dark:hover:bg-gray-800 rounded-xl text-gray-500 transition-colors">
-                        <MoreVertical size={18} />
-                    </button>
-                </div>
+                        {/* Message Content Scrollable Area */}
+                        <div className="flex-1 overflow-y-auto custom-scrollbar p-10">
+                            <div className="flex items-start justify-between mb-10">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400">
+                                        <User size={24} />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-[16px] font-bold text-[#001D35] dark:text-white mb-1 flex items-center gap-2">
+                                            {selectedMessage.recipient} <span className="text-[12px] font-medium text-gray-400 dark:text-gray-500">{"<"}{selectedMessage.email}{">"}</span>
+                                        </h2>
+                                        <h3 className="text-[14px] font-semibold text-slate-800 dark:text-gray-200 mb-1">
+                                            {selectedMessage.subject}
+                                        </h3>
+                                        <div className="text-[12px] text-gray-400 dark:text-gray-500 font-medium">
+                                            Dari: saya &nbsp; Reply-To: admin@maganghub.id
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="text-[12px] text-gray-400 dark:text-gray-500 font-medium whitespace-nowrap pt-1">
+                                    {selectedMessage.date}
+                                </div>
+                            </div>
 
-                <div className="flex flex-col items-center max-w-sm relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                    <div className="mb-10">
-                        <Send size={64} className="text-[#001D35]/10 dark:text-white/10" strokeWidth={1} />
+                            <div className="max-w-4xl border border-gray-100 dark:border-gray-800 rounded-2xl p-8 bg-white dark:bg-gray-900 shadow-sm">
+                                <p className="text-[13px] text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+                                    {selectedMessage.content}
+                                </p>
+                            </div>
+
+                            <div className="flex items-center gap-3 mt-8">
+                                <button className="px-6 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-[13px] font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all flex items-center gap-2">
+                                    <Reply size={16} /> Balas
+                                </button>
+                                <button className="px-6 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-[13px] font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all flex items-center gap-2">
+                                    <Forward size={16} /> Teruskan
+                                </button>
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    <div className="flex-1 flex flex-col items-center justify-center text-center p-10">
+                        <p className="text-[15px] font-medium text-gray-300 dark:text-gray-600 tracking-tight">
+                            Pilih pesan untuk dibaca
+                        </p>
                     </div>
-                    <p className="text-[15px] font-bold text-[#001D35]/30 dark:text-white/30 tracking-tight">
-                        Pilih surat terkirim untuk melihat detail
-                    </p>
-                </div>
+                )}
             </div>
         </div>
     );
